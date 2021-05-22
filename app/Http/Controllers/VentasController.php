@@ -32,7 +32,7 @@ class VentasController extends Controller
 
     public function list()
     {
-        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'empleado', 'detalles.cuotas.pagos'])
+        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'garantes.persona', 'detalles.cuotas.pagos'])
                         ->where('deleted_at', NULL)->get();
         // return $data;
 
@@ -43,11 +43,18 @@ class VentasController extends Controller
                 return '
                     <div class="col-md-12">
                         <b>'.$row->cliente->nombre_completo.'</b><br>
-                        <small>Cel: '.($row->cliente->telefono ?? 'No definido').'</small>
+                        <small>Cel: '.('<a href="tel:'.$row->cliente->telefono.'">'.$row->cliente->telefono.'</a>' ?? 'No definido').'</small>
                     </div>';
             })
-            ->addColumn('empleado', function($row){
-                return $row->empleado->name;
+            ->addColumn('garante', function($row){
+                $garantes = '';
+                foreach ($row->garantes as $item) {
+                    $garantes .= '<li>'.$item->persona->nombre_completo.' <br> <small>Cel: '.('<a href="tel:'.$item->persona->telefono.'">'.$item->persona->telefono.'</a>' ?? 'No definido').'</small></li>';
+                }
+                return '
+                    <div class="col-md-12">
+                        <ul>'.$garantes.'</ul>
+                    </div>';
             })
             ->addColumn('detalles', function($row){
                 $detalles = '';
@@ -71,13 +78,17 @@ class VentasController extends Controller
                 $pagos = 0;
                 foreach ($row->detalles as $item) {
                     $total += $item->precio;
+                    $proximo_pago = '';
                     foreach ($item->cuotas as $cuota) {
+                        if($cuota->estado == 'pendiente' && !$proximo_pago){
+                            $proximo_pago = $cuota->fecha;
+                        }
                         foreach ($cuota->pagos as $pago) {
                             $pagos += $pago->monto;
                         }
                     }
                 }
-                return number_format($total-$pagos, 2, ',', '.');
+                return number_format($total-$pagos, 2, ',', '.').($proximo_pago ? '<br><small class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</small>' : '');
             })
             ->addColumn('action', function($row){
                 $btn_mas = "<li><a href='#' data-toggle='modal' data-target='#etapa_modal' onclick='changeStatus(".(json_encode($row)).")'>Etapa</a></li>";
@@ -93,7 +104,7 @@ class VentasController extends Controller
                         ';
                 return $actions;
             })
-            ->rawColumns(['cliente', 'empleado', 'detalles', 'total', 'deuda', 'action'])
+            ->rawColumns(['cliente', 'garante', 'detalles', 'total', 'deuda', 'action'])
             ->make(true);
     }
 

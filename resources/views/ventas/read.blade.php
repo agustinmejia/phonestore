@@ -161,7 +161,7 @@
                                     <th>Tipo</th>
                                     <th>Fecha</th>
                                     <th>Monto</th>
-                                    <th>Pago</th>
+                                    <th>Deuda</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
@@ -234,7 +234,7 @@
                             <td>${item.tipo}</td>
                             <td>${item.fecha}</td>
                             <td>${item.monto}</td>
-                            <td>${totalPago.toFixed(2)}</td>
+                            <td>${item.monto - totalPago.toFixed(2)}</td>
                             <td><span class="text-${item.estado == 'pagada' ? 'success' : 'danger'}">${item.estado}</span></td>
                         </tr>
                     `;

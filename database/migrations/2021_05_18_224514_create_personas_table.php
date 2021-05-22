@@ -20,6 +20,7 @@ class CreatePersonasTable extends Migration
             $table->string('telefono')->nullable();
             $table->string('direccion')->nullable();
             $table->string('foto')->nullable();
+            $table->string('archivos')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

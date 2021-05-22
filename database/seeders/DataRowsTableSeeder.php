@@ -713,14 +713,14 @@ class DataRowsTableSeeder extends Seeder
                 'data_type_id' => 7,
                 'field' => 'foto',
                 'type' => 'image',
-                'display_name' => 'Foto',
+                'display_name' => 'Fotografía',
                 'required' => 0,
                 'browse' => 1,
                 'read' => 1,
                 'edit' => 1,
                 'add' => 1,
                 'delete' => 1,
-                'details' => '{}',
+                'details' => '{"display":{"width":6}}',
                 'order' => 6,
             ),
             44 => 
@@ -737,7 +737,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 7,
+                'order' => 8,
             ),
             45 => 
             array (
@@ -753,7 +753,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 8,
+                'order' => 9,
             ),
             46 => 
             array (
@@ -769,7 +769,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 9,
+                'order' => 10,
             ),
             47 => 
             array (
@@ -914,6 +914,22 @@ class DataRowsTableSeeder extends Seeder
                 'delete' => 0,
                 'details' => '{}',
                 'order' => 9,
+            ),
+            56 => 
+            array (
+                'id' => 57,
+                'data_type_id' => 7,
+                'field' => 'archivos',
+                'type' => 'multiple_images',
+                'display_name' => 'Archivos',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"display":{"width":6}}',
+                'order' => 7,
             ),
         ));
         

@@ -47,7 +47,7 @@ class ComprasController extends Controller
             ->addColumn('detalles', function($row){
                 $detalles = '';
                 foreach ($row->producto as $item) {
-                    $detalles .= '<li>'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b></li>';
+                    $detalles .= '<li style="padding: 2px">'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b> <label class="label label-'.($item->estado == 'disponible' ? 'success' : 'danger').'">'.$item->estado.'</label> </li>';
                 }
                 return '
                     <div class="col-md-12">

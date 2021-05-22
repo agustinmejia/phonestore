@@ -71,7 +71,7 @@
             let columns = [
                 { data: 'id', title: 'id' },
                 { data: 'cliente', title: 'Cliente' },
-                { data: 'empleado', title: 'Empleado' },
+                { data: 'garante', title: 'Garante(s)' },
                 { data: 'detalles', title: 'Detalles' },
                 { data: 'total', title: 'Total Bs.' },
                 { data: 'deuda', title: 'Deuda Bs.' },
