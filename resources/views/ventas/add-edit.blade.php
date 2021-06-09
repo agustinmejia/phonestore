@@ -140,6 +140,7 @@
                                         <table class="table" style="display: none" id="table-list">
                                             <thead>
                                                 <th>Detalles del equipo</th>
+                                                <th style="width: 120px">Precio</th>
                                                 <th style="width: 120px">Cuota inicial Bs.</th>
                                                 <th style="width: 120px">Cant. cuotas</th>
                                                 <th>Periodo</th>
@@ -206,12 +207,17 @@
                                 <td>
                                     <b>${data.tipo.nombre}</b><br>
                                     <small>${data.tipo.marca.nombre}</small><br>
-                                    <b>${data.precio_venta} Bs.</b><br>
+                                    <b>${data.precio_venta} - ${data.precio_venta_contado} Bs.</b><br>
                                 </td>
                             </tr>
                         </table>
                         <input type="hidden" name="producto_id[]" value="${data.id}" required/>
-                        <input type="hidden" name="precio[]" id="input-precio-${data.id}" value="${data.precio_venta}" required/>
+                    </td>
+                    <td>
+                        <select name="precio[]" class="form-control" id="select-precio-${data.id}" onchange="subTotal(${data.id})" required>
+                            <option value="${data.precio_venta}">${data.precio_venta} - Crédito</option>
+                            <option value="${data.precio_venta_contado}">${data.precio_venta_contado} - Contado</option>   
+                        </select>    
                     </td>
                     <td><input type="number" min="0" step="1" name="cuota_inicial[]" id="input-cuota_inicial-${data.id}" value="0" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" class="form-control" /></td>
                     <td><input type="number" min="1" step="1" name="cuotas[]" id="input-cuotas-${data.id}" value="1" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" class="form-control" required /></td>
@@ -229,7 +235,7 @@
             showHelp();
         }
         function subTotal(index){
-            let precio = $(`#input-precio-${index}`).val() ? parseFloat($(`#input-precio-${index}`).val()) : 0;
+            let precio = $(`#select-precio-${index} option:selected`).val() ? parseFloat($(`#select-precio-${index} option:selected`).val()) : 0;
             let cuotaInicial = $(`#input-cuota_inicial-${index}`).val() ? parseFloat($(`#input-cuota_inicial-${index}`).val()) : 0;
             let cantidadCuotas = $(`#input-cuotas-${index}`).val() ? parseFloat($(`#input-cuotas-${index}`).val()) : 0;
             if(cantidadCuotas > 0){

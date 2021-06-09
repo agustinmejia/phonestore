@@ -88,7 +88,7 @@ class VentasController extends Controller
                         }
                     }
                 }
-                return number_format($total-$pagos, 2, ',', '.').($proximo_pago ? '<br><small class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</small>' : '');
+                return number_format($total-$pagos, 2, ',', '.').($proximo_pago ? '<br><b style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</b>' : '');
             })
             ->addColumn('action', function($row){
                 $btn_mas = "<li><a href='#' data-toggle='modal' data-target='#etapa_modal' onclick='changeStatus(".(json_encode($row)).")'>Etapa</a></li>";

@@ -20,6 +20,7 @@ class CreateProductosTable extends Migration
             $table->string('imei')->nullable();
             $table->decimal('precio_compra', 10, 2)->nullable();
             $table->decimal('precio_venta', 10, 2)->nullable();
+            $table->decimal('precio_venta_contado', 10, 2)->nullable();
             $table->string('estado')->nullable()->default('disponible');
             $table->timestamps();
             $table->softDeletes();

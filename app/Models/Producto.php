@@ -12,7 +12,7 @@ class Producto extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
-        'tipos_producto_id', 'compra_id', 'imei', 'precio_compra', 'precio_venta', 'estado'
+        'tipos_producto_id', 'compra_id', 'imei', 'precio_compra', 'precio_venta', 'precio_venta_contado', 'estado'
     ];
 
     function tipo(){
