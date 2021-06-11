@@ -115,6 +115,15 @@
                                         @endif
                                     </div>
                                     <div class="form-group">
+                                        <label>Fecha de venta</label>
+                                        <input type="date" name="fecha" class="form-control" value="{{ date('Y-m-d') }}" required>
+                                        @if ($errors->has('fecha'))
+                                            @foreach ($errors->get('fecha') as $error)
+                                                <span class="help-block text-danger">{{ $error }}</span>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
                                         <textarea name="observaciones" class="form-control" rows="3" placeholder="Observaciones">{{ isset($reg) ? $reg->observaciones : old('observaciones') }}</textarea>
                                     </div>
                                     {{-- <div class="form-group">
@@ -212,11 +221,12 @@
                             </tr>
                         </table>
                         <input type="hidden" name="producto_id[]" value="${data.id}" required/>
+                        <input type="hidden" name="tipo_venta[]" id="input-tipo_venta-${data.id}" value="credito" required/>
                     </td>
                     <td>
                         <select name="precio[]" class="form-control" id="select-precio-${data.id}" onchange="subTotal(${data.id})" required>
-                            <option value="${data.precio_venta}">${data.precio_venta} - Crédito</option>
-                            <option value="${data.precio_venta_contado}">${data.precio_venta_contado} - Contado</option>   
+                            <option value="${data.precio_venta}" data-type="credito">${data.precio_venta} - Crédito</option>
+                            <option value="${data.precio_venta_contado}" data-type="contado">${data.precio_venta_contado} - Contado</option>   
                         </select>    
                     </td>
                     <td><input type="number" min="0" step="1" name="cuota_inicial[]" id="input-cuota_inicial-${data.id}" value="0" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" class="form-control" /></td>
@@ -235,9 +245,21 @@
             showHelp();
         }
         function subTotal(index){
+
             let precio = $(`#select-precio-${index} option:selected`).val() ? parseFloat($(`#select-precio-${index} option:selected`).val()) : 0;
+            let type = $(`#select-precio-${index} option:selected`).data('type');
+            if(type == 'contado'){
+                $(`#input-cuota_inicial-${index}`).val(precio);
+                $(`#input-cuota_inicial-${index}`).attr('readonly', 'readonly');
+            }else{
+                // $(`#input-cuota_inicial-${index}`).val(0);
+                $(`#input-cuota_inicial-${index}`).removeAttr('readonly');
+            }
+            $(`#input-tipo_venta-${index}`).val(type);
+
             let cuotaInicial = $(`#input-cuota_inicial-${index}`).val() ? parseFloat($(`#input-cuota_inicial-${index}`).val()) : 0;
             let cantidadCuotas = $(`#input-cuotas-${index}`).val() ? parseFloat($(`#input-cuotas-${index}`).val()) : 0;
+            
             if(cantidadCuotas > 0){
                 let cuota = (precio - cuotaInicial) / cantidadCuotas;            
                 $(`#label-pago_cuota-${index}`).text(`${cuota.toFixed(2)}`);

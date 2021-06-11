@@ -656,7 +656,7 @@ class DataRowsTableSeeder extends Seeder
                 'edit' => 1,
                 'add' => 1,
                 'delete' => 1,
-                'details' => '{"validation":{"rule":"required|max:191"}}',
+                'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
                 'order' => 2,
             ),
             40 => 
@@ -705,7 +705,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{}',
-                'order' => 5,
+                'order' => 6,
             ),
             43 => 
             array (
@@ -721,7 +721,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6}}',
-                'order' => 6,
+                'order' => 7,
             ),
             44 => 
             array (
@@ -737,7 +737,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 8,
+                'order' => 9,
             ),
             45 => 
             array (
@@ -753,7 +753,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 9,
+                'order' => 10,
             ),
             46 => 
             array (
@@ -769,7 +769,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 0,
                 'delete' => 0,
                 'details' => '{}',
-                'order' => 10,
+                'order' => 11,
             ),
             47 => 
             array (
@@ -917,7 +917,23 @@ class DataRowsTableSeeder extends Seeder
             ),
             56 => 
             array (
-                'id' => 57,
+                'id' => 58,
+                'data_type_id' => 7,
+                'field' => 'trabajo',
+                'type' => 'text',
+                'display_name' => 'Lugar de trabajo',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"display":{"width":6}}',
+                'order' => 5,
+            ),
+            57 => 
+            array (
+                'id' => 59,
                 'data_type_id' => 7,
                 'field' => 'archivos',
                 'type' => 'multiple_images',
@@ -929,7 +945,7 @@ class DataRowsTableSeeder extends Seeder
                 'add' => 1,
                 'delete' => 1,
                 'details' => '{"display":{"width":6}}',
-                'order' => 7,
+                'order' => 8,
             ),
         ));
         

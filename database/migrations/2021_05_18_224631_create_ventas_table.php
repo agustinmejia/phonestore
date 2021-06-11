@@ -18,6 +18,7 @@ class CreateVentasTable extends Migration
             $table->foreignId('persona_id')->nullable()->constrained('personas');
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->text('observaciones')->nullable();
+            $table->date('fecha')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

@@ -51,7 +51,7 @@
                                 <div class="col-md-9" style="max-height: 400px; overflow-y: auto">
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <label>Poroductos</label>
+                                            <label>Productos</label>
                                             <select id="select-productos_tipo_id" class="form-control select2">
                                                 <option disabled selected value="">-- Seleccionar productos --</option>
                                                 @foreach ($productos_tipo as $item)
@@ -119,7 +119,7 @@
     </div>
 @stop
 
-@section('javascript')
+@section('javascript')  
     <script>
         $(document).ready(function(){
             var indexTable = 0;

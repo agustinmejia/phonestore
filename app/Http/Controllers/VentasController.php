@@ -132,10 +132,12 @@ class VentasController extends Controller
         // dd($request);
         DB::beginTransaction();
         try {
+            $fecha = $request->fecha ?? date('Y-m-d');
             $venta = Venta::create([
                 'persona_id' => $request->cliente_id,
                 'user_id' => Auth::user()->id,
-                'observaciones' => $request->observaciones
+                'observaciones' => $request->observaciones,
+                'fecha' => $fecha
             ]);
 
             for ($i=0; $i < count($request->garante_id); $i++) { 
@@ -156,10 +158,10 @@ class VentasController extends Controller
                     'estado' => 'vendido'
                 ]);
 
-                $fecha = date('Y-m-d');
+                // Pago de la cuota inicial
                 $cuota = VentasDetallesCuota::create([
                     'ventas_detalle_id' => $detalle->id,
-                    'tipo' => 'cuota inicial',
+                    'tipo' => $request->tipo_venta[$i] == 'credito' ? 'cuota inicial' : 'Pago del equipo',
                     'monto' => $request->cuota_inicial[$i] ?? 0,
                     'fecha' => $fecha,
                     'estado' => 'pagada'
@@ -175,34 +177,36 @@ class VentasController extends Controller
                 }
 
                 // Calcular periodo de pagos
-                switch ($request->periodo[$i]) {
-                    case 'mensual':
-                        $periodo = 'month';
-                        $cantidad = 1;
-                        break;
-                    case 'quincenal':
-                        $periodo = 'days';
-                        $cantidad = 15;
-                        break;
-                    case 'semanal':
-                        $periodo = 'days';
-                        $cantidad = 7;
-                        break;
-                    default:
-                        $periodo = 'days';
-                        $cantidad = 1;
-                        break;
-                }
+                if ($request->tipo_venta[$i] == 'credito') {
+                    switch ($request->periodo[$i]) {
+                        case 'mensual':
+                            $periodo = 'month';
+                            $cantidad = 1;
+                            break;
+                        case 'quincenal':
+                            $periodo = 'days';
+                            $cantidad = 15;
+                            break;
+                        case 'semanal':
+                            $periodo = 'days';
+                            $cantidad = 7;
+                            break;
+                        default:
+                            $periodo = 'days';
+                            $cantidad = 1;
+                            break;
+                    }
 
-                for ($j=0; $j < $request->cuotas[$i]; $j++) {
-                    $fecha = date("Y-m-d", strtotime($fecha."+ $cantidad $periodo"));
-                    VentasDetallesCuota::create([
-                        'ventas_detalle_id' => $detalle->id,
-                        'tipo' => 'cuota',
-                        'monto' => $request->pago_cuota[$i],
-                        'fecha' => $fecha,
-                        'estado' => 'pendiente'
-                    ]);
+                    for ($j=0; $j < $request->cuotas[$i]; $j++) {
+                        $fecha = date("Y-m-d", strtotime($fecha."+ $cantidad $periodo"));
+                        VentasDetallesCuota::create([
+                            'ventas_detalle_id' => $detalle->id,
+                            'tipo' => 'cuota',
+                            'monto' => $request->pago_cuota[$i],
+                            'fecha' => $fecha,
+                            'estado' => 'pendiente'
+                        ]);
+                    }
                 }
             }
 

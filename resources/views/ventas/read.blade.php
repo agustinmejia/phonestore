@@ -59,7 +59,7 @@
                                 <h3 class="panel-title">Fecha de venta</h3>
                             </div>
                             <div class="panel-body" style="padding-top:0;">
-                                <p>{{ date('d-M-Y', strtotime($reg->created_at)) }} <small>{{ \Carbon\Carbon::parse($reg->created_at)->diffForHumans() }}</small></p>
+                                <p>{{ date('d-M-Y', strtotime($reg->fecha)) }} <small>{{ \Carbon\Carbon::parse($reg->fecha)->diffForHumans() }}</small></p>
                             </div>
                             <hr style="margin:0;">
                         </div>
@@ -115,7 +115,6 @@
                                                                 <td>
                                                                     <b>{{ $item->producto->tipo->nombre }}</b><br>
                                                                     <small>{{ $item->producto->tipo->marca->nombre }}</small><br>
-                                                                    <b>{{ $item->precio_venta }} Bs.</b><br>
                                                                 </td>
                                                             </tr>
                                                         </table>
