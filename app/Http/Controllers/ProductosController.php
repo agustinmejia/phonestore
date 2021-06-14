@@ -32,7 +32,7 @@ class ProductosController extends Controller
 
     public function list()
     {
-        $data = Producto::with(['tipo.marca'])->where('deleted_at', NULL)->get();
+        $data = Producto::with(['tipo.marca', 'venta.cuotas.pagos'])->where('deleted_at', NULL)->get();
         // return $data;
 
         return
@@ -65,7 +65,51 @@ class ProductosController extends Controller
                         <small>Precio de venta al crédito:</small> <b title="Ganancia Bs. '.($row->precio_venta-$row->precio_compra).'" style="cursor: pointer">Bs. '.number_format($row->precio_venta, 0, '', '').'</b><br>
                     </div>';
             })
-            ->rawColumns(['equipo', 'precios'])
+            ->addColumn('estado', function($row){
+                $clase = 'secondary';
+                switch ($row->estado) {
+                    case 'crédito':
+                        $clase = 'danger';
+                        break;
+                    case 'disponible':
+                        $clase = 'success';
+                        break;    
+                    case 'vendido':
+                        $clase = 'primary';
+                        break;
+                }
+                return '<label class="label label-'.$clase.'">'.$row->estado.'</label>';
+            })
+            ->addColumn('detalles', function($row){
+                $detalles = '';
+                if($row->estado == 'vendido'){
+                    $detalles = '
+                        <div>
+                            <small>Precio de venta: </small><b>Bs. '.number_format($row->venta->precio, 0, '', '').'</b><br>
+                            <small>Ganancia: </small><b>Bs. '.($row->venta->precio-$row->precio_compra).'</b>
+                        </div>
+                    ';
+                }
+                if($row->estado == 'crédito'){
+                    $monto_pagado = 0;
+                    foreach ($row->venta->cuotas as $cuota) {
+                        foreach ($cuota->pagos as $pago) {
+                            $monto_pagado += $pago->monto;
+                        }
+                    }
+                    $detalles = '
+                        <div>
+                            <small>Precio de venta: </small><b>Bs. '.number_format($row->venta->precio, 0, '', '').'</b><br>
+                            <small>Ganancia: </small><b>Bs. '.($row->venta->precio-$row->precio_compra).'</b><br>
+                            <small>Nro de cuotas: </small><b>'.count($row->venta->cuotas->where('tipo', 'cuota')).'</b>
+                            <small> - pagadas: </small><b>'.count($row->venta->cuotas->where('estado', 'pagada')->where('tipo', 'cuota')).'</b> <br>
+                            <small>Monto pagado: </small><b>Bs. '.$monto_pagado.'</b> - <small>Deuda: </small><b>Bs. '.($row->venta->precio - $monto_pagado).'</b>
+                        </div>
+                    ';
+                }
+                return $detalles;
+            })
+            ->rawColumns(['equipo', 'precios', 'estado', 'detalles'])
             ->make(true);
     }
 
@@ -96,7 +140,7 @@ class ProductosController extends Controller
                     </table>';
             })
             ->addColumn('stock', function($row){
-                return count($row->productos->where("estado", "disponible"));
+                return $row->productos->where("estado", "disponible")->count();
             })
             ->addColumn('stock_credito', function($row){
                 return count($row->productos->where("estado", "crédito"));
@@ -110,12 +154,25 @@ class ProductosController extends Controller
                 }
                 return $inversion;
             })
+            ->addColumn('pagos', function($row){
+                $pagos = 0;
+                foreach ($row->productos as $producto) {
+                    if($producto->venta && $producto->estado != "vendido"){
+                        foreach ($producto->venta->cuotas as $cuota) {
+                            foreach ($cuota->pagos as $pago) {
+                                $pagos += $pago->monto;
+                            }
+                        }
+                    }
+                }
+                return $pagos;
+            })
             ->addColumn('deuda', function($row){
                 $total = 0;
                 $pagos = 0;
                 foreach ($row->productos as $producto) {
                     if($producto->venta){
-                        $total = $producto->venta->precio;
+                        $total += $producto->venta->precio;
                         foreach ($producto->venta->cuotas as $cuota) {
                             foreach ($cuota->pagos as $pago) {
                                 $pagos += $pago->monto;
@@ -125,7 +182,18 @@ class ProductosController extends Controller
                 }
                 return $total-$pagos;
             })
-            ->rawColumns(['equipo', 'stock', 'stock_credito', 'inversion', 'deuda'])
+            ->addColumn('ganancia', function($row){
+                $inversion = 0;
+                $costo = 0;
+                foreach ($row->productos as $producto) {
+                    if($producto->venta && $producto->estado != "vendido"){
+                        $inversion += $producto->precio_compra;
+                        $costo += $producto->venta->precio;
+                    }
+                }
+                return $costo - $inversion;
+            })
+            ->rawColumns(['equipo', 'stock', 'stock_credito', 'inversion', 'pagos', 'deuda', 'ganancia'])
             ->make(true);
     }
 

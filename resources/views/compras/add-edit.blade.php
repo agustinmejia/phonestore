@@ -68,8 +68,8 @@
                                                     <th>Tipo</th>
                                                     <th>IMEI</th>
                                                     <th style="width: 100px">Precio compra</th>
-                                                    <th style="width: 100px">Precio venta</th>
                                                     <th style="width: 100px">Precio venta <br> contado </th>
+                                                    <th style="width: 100px">Precio venta <br> crédito</th>
                                                     {{-- <th>Total</th> --}}
                                                     <th>Ganancias</th>
                                                     <th style="width: 50px"></th>
@@ -137,8 +137,8 @@
                     <td><input type="hidden" name="productos_tipo_id[]" class="form-control" placeholder="PC Sure 2021" value="${data.id}" required/>${data.marca.nombre} ${data.nombre}</td>
                     <td><input type="text" name="imei[]" class="form-control" placeholder="123456789..." required/></td>
                     <td><input type="number" step="1" min="1" name="precio_compra[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" value="" id="input-precio_compra-${indexTable}" required/></td>
-                    <td><input type="number" step="1" min="1" name="precio_venta[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta-${indexTable}" required/></td>
                     <td><input type="number" step="1" min="1" name="precio_venta_contado[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta_contado-${indexTable}" required/></td>
+                    <td><input type="number" step="1" min="1" name="precio_venta[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta-${indexTable}" required/></td>
                     <td><h5 id="label-ganancia-${indexTable}">0.00</h5></td>
                     <td><button type="button" onclick="removeTr(${indexTable})" class="btn btn-link"><i class="voyager-trash text-danger"></i></button></td>
                 </tr>
@@ -153,7 +153,7 @@
             let ganancia = precio_venta - precio_compra;
             let ganancia_contado = precio_venta_contado - precio_compra;
 
-            $(`#label-ganancia-${index}`).text(`${ganancia.toFixed(2)} - ${ganancia_contado.toFixed(2)}`);
+            $(`#label-ganancia-${index}`).text(`${ganancia_contado} | ${ganancia}`);
 
             if(ganancia <= 0 || ganancia_contado <= 0){
                 $(`#label-ganancia-${index}`).addClass('text-danger');

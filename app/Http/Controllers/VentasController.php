@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use App\Models\TiposProducto;
 use App\Models\Persona;
 use App\Models\Producto;
+use App\Models\Marca;
 use App\Models\Venta;
 use App\Models\VentasDetalle;
 use App\Models\VentasDetallesCuota;
@@ -121,7 +122,9 @@ class VentasController extends Controller
     public function create()
     {
         $type = 'add';
-        $productos = Producto::with(['tipo.marca'])->where('deleted_at', NULL)->where('estado', 'disponible')->orderBy('precio_venta', 'ASC')->get();
+        // $productos = Producto::with(['tipo.marca'])->where('deleted_at', NULL)->where('estado', 'disponible')->orderBy('precio_venta', 'ASC')->get();
+        $productos = Marca::with(['tipos.productos.tipo.marca'])->get();
+        // dd($productos);
         $personas = Persona::all()->where('deleted_at', NULL);
         return view('ventas.add-edit', compact('type', 'productos', 'personas'));
     }

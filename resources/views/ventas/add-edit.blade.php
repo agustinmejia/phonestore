@@ -49,8 +49,8 @@
 
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="col-md-12" style="min-height: 300px; overflow-y: auto; border: 1px solid #d8d8d8">
-                                        @forelse ($productos as $item)
+                                    <div class="col-md-12" style="min-height: 300px; overflow-y: auto; border: 1px solid #d8d8d8; padding: 0px">
+                                        {{-- @forelse ($productos as $item)
                                             @php
                                                 $img = asset('images/phone-default.jpg');
                                                 $imagenes = [];
@@ -74,7 +74,61 @@
                                             </div>
                                         @empty
                                             <h3 class="text-muted text-center" style="margin-top: 20px">No hay celulares disponibles</h3>
-                                        @endforelse
+                                        @endforelse --}}
+                                        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                            @foreach ($productos as $marca)
+                                                <div class="panel panel-default" style="margin: 0px">
+                                                    <div class="panel-heading" role="tab" id="headingOne">
+                                                        <h4 class="panel-title">
+                                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ $marca->id }}" aria-expanded="true" aria-controls="collapse-{{ $marca->id }}">
+                                                            {{ $marca->nombre }}
+                                                        </a>
+                                                        </h4>
+                                                    </div>
+                                                    <div id="collapse-{{ $marca->id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                                        <div class="panel-body">
+                                                            @foreach ($marca->tipos as $tipo)
+                                                                <div class="row">
+                                                                    <div class="col-md-12">
+                                                                        <ol class="breadcrumb">
+                                                                            <li><a href="#">{{ $marca->nombre }}</a></li>
+                                                                            <li class="active">{{ $tipo->nombre }}</li>
+                                                                        </ol>
+                                                                    </div>
+                                                                    <div class="col-md-12">
+                                                                        @foreach ($tipo->productos as $item)
+                                                                            @if ($item->estado == 'disponible')
+                                                                            @php
+                                                                                $img = asset('images/phone-default.jpg');
+                                                                                $imagenes = [];
+                                                                                if ($item->tipo->imagenes) {
+                                                                                    $imagenes = json_decode($item->tipo->imagenes);
+                                                                                    $img = asset('storage/'.str_replace(".", "-cropped.", $imagenes[0]));
+                                                                                }
+                                                                            @endphp
+                                                                            <div class="card col-md-2 card-phone" style="padding: 5px" data-item='@json($item)'>
+                                                                                <div style="position: absolute; top: 3px; right: 3px">
+                                                                                    <label class="label label-primary">{{ $item->precio_venta }}</label>
+                                                                                </div>
+                                                                                <img src="{{ $img }}" class="card-img-top" width="100%" alt="phone">
+                                                                                <div class="card-body" style="padding: 5px">
+                                                                                    <b style="white-space: nowrap">{{ $item->tipo->nombre }}</b> <br>
+                                                                                    <small style="font-size: 10px white-space: nowrap">{{ $item->tipo->marca->nombre }}</small>
+                                                                                </div>
+                                                                                <div id="label-imei-{{ $item->id }}" style="position: absolute; bottom: 3px; left: 0px; right: 0px; background-color: rgba(0,0,0,0.8); display: none">
+                                                                                    <p class="text-center" style="color: white; margin: 5px; font-size: 11px"><small style="font-size: 9px">IMEI</small> <br> {{ $item->imei }} </p>
+                                                                                </div>
+                                                                            </div>
+                                                                            @endif
+                                                                        @endforeach
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -217,7 +271,7 @@
                                 <td>
                                     <b>${data.tipo.nombre}</b><br>
                                     <small>${data.tipo.marca.nombre}</small><br>
-                                    <b>${data.precio_venta} - ${data.precio_venta_contado} Bs.</b><br>
+                                    <b>${data.precio_venta_contado} - ${data.precio_venta} Bs.</b><br>
                                 </td>
                             </tr>
                         </table>

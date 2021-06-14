@@ -56,7 +56,8 @@
                     { data: 'id', title: 'id' },
                     { data: 'equipo', title: 'Equipo' },
                     { data: 'precios', title: 'Precios' },
-                    // { data: 'precio_venta_contado', title: 'Precio venta contado' },
+                    { data: 'estado', title: 'Estado' },
+                    { data: 'detalles', title: 'Detalles' },
                     // { data: 'precio_venta', title: 'Precio venta crédito' },
                 ];
                 customDataTable("{{ url('admin/productos/ajax/list') }}", columns);
@@ -67,7 +68,9 @@
                     { data: 'stock', title: 'Stock actual' },
                     { data: 'stock_credito', title: 'Stock a crédito' },
                     { data: 'inversion', title: 'Inversión Bs.' },
+                    { data: 'pagos', title: 'Pagos Bs.' },
                     { data: 'deuda', title: 'Deuda Bs.' },
+                    { data: 'ganancia', title: 'Ganancia Bs.' },
                     // { data: 'action', title: 'Acciones', orderable: false, searchable: false },
                 ];
                 customDataTable("{{ url('admin/productos/ajax/list/type') }}", columns);

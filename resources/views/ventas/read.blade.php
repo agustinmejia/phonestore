@@ -126,9 +126,11 @@
                                                         <button class="btn btn-success btn-sm btn-detalle" data-toggle="modal" data-target="#detalle_modal" data-cuotas='@json($item->cuotas)'>
                                                             <i class="voyager-list"></i> <span class="hidden-xs hidden-sm">Detalles</span>
                                                         </button>
+                                                        @if ($item->precio - $pagos)
                                                         <button class="btn btn-info btn-sm btn-pago" data-toggle="modal" data-target="#pago_modal" data-cuotas='@json($item->cuotas)'>
                                                             <i class="voyager-dollar"></i> <span class="hidden-xs hidden-sm">Pago</span>
                                                         </button>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach

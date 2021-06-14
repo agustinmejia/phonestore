@@ -10,4 +10,8 @@ class Marca extends Model
 {
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
+
+    function tipos(){
+        return $this->hasMany(TiposProducto::class);
+    }
 }
