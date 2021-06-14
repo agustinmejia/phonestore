@@ -20,6 +20,11 @@ use App\Models\VentasDetallesCuotasPago;
 
 class VentasController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -71,7 +76,7 @@ class VentasController extends Controller
                 foreach ($row->detalles as $item) {
                     $total += $item->precio;
                 }
-                return number_format($total, 2, ',', '.');
+                return $total;
             })
             ->addColumn('deuda', function($row){
                 $total = 0;
@@ -88,7 +93,7 @@ class VentasController extends Controller
                         }
                     }
                 }
-                return number_format($total-$pagos, 2, ',', '.').($proximo_pago ? '<br><b style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</b>' : '');
+                return ($total-$pagos).($proximo_pago ? '<br><b style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</b>' : '');
             })
             ->addColumn('action', function($row){
                 $btn_mas = "<li><a href='#' data-toggle='modal' data-target='#etapa_modal' onclick='changeStatus(".(json_encode($row)).")'>Etapa</a></li>";
@@ -140,14 +145,14 @@ class VentasController extends Controller
                 'fecha' => $fecha
             ]);
 
-            for ($i=0; $i < count($request->garante_id); $i++) { 
+            for ($i=0; $i < count($request->garante_id); $i++) {
                 VentasGarante::create([
                     'venta_id' => $venta->id,
                     'persona_id' => $request->garante_id[$i]
                 ]);
             }
 
-            for ($i=0; $i < count($request->producto_id); $i++) { 
+            for ($i=0; $i < count($request->producto_id); $i++) {
                 $detalle = VentasDetalle::create([
                     'venta_id' => $venta->id,
                     'producto_id' => $request->producto_id[$i],
@@ -155,7 +160,7 @@ class VentasController extends Controller
                 ]);
 
                 Producto::where('id', $request->producto_id[$i])->update([
-                    'estado' => 'vendido'
+                    'estado' => $request->tipo_venta[$i] == 'credito' ? 'crédito' : 'vendido'
                 ]);
 
                 // Pago de la cuota inicial
@@ -266,7 +271,7 @@ class VentasController extends Controller
         //
     }
 
-    public function pago_store(Request $request){        
+    public function pago_store(Request $request){
         DB::beginTransaction();
         try {
             $pagos = VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $request->ventas_detalles_cuota_id)->where('deleted_at', NULL)->get();

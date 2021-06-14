@@ -18,4 +18,8 @@ class TiposProducto extends Model
     function marca(){
         return $this->belongsTo(Marca::class, 'marca_id');
     }
+
+    function productos(){
+        return $this->hasMany(Producto::class);
+    }
 }

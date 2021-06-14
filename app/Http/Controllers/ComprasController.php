@@ -16,6 +16,11 @@ use App\Models\Compra;
 
 class ComprasController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -59,7 +64,7 @@ class ComprasController extends Controller
                 foreach ($row->producto as $item) {
                     $total += $item->precio_compra;
                 }
-                return number_format($total, 2, ',', '.');
+                return $total;
             })
             ->addColumn('action', function($row){
                 $btn_mas = "<li><a href='#' data-toggle='modal' data-target='#etapa_modal' onclick='changeStatus(".(json_encode($row)).")'>Etapa</a></li>";
@@ -108,7 +113,7 @@ class ComprasController extends Controller
                 'observaciones' => $request->observaciones
             ]);
 
-            for ($i=0; $i < count($request->productos_tipo_id); $i++) { 
+            for ($i=0; $i < count($request->productos_tipo_id); $i++) {
                 Producto::create([
                     'tipos_producto_id' => $request->productos_tipo_id[$i],
                     'compra_id' => $compra->id,

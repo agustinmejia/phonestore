@@ -18,4 +18,8 @@ class Producto extends Model
     function tipo(){
         return $this->belongsTo(TiposProducto::class, 'tipos_producto_id');
     }
+
+    function venta(){
+        return $this->hasOne(VentasDetalle::class);
+    }
 }

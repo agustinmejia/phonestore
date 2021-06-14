@@ -56,13 +56,14 @@
                                                 $imagenes = [];
                                                 if ($item->tipo->imagenes) {
                                                     $imagenes = json_decode($item->tipo->imagenes);
+                                                    $img = asset('storage/'.str_replace(".", "-cropped.", $imagenes[0]));
                                                 }
                                             @endphp
                                             <div class="card col-md-2 card-phone" style="padding: 5px" data-item='@json($item)'>
                                                 <div style="position: absolute; top: 3px; right: 3px">
                                                     <label class="label label-primary">{{ $item->precio_venta }}</label>
                                                 </div>
-                                                <img src="{{ count($imagenes) > 0 ? asset('storage/'.str_replace(".", "-cropped.", $imagenes[0])) : $img }}" class="card-img-top" width="100%" alt="phone">
+                                                <img src="{{ $img }}" class="card-img-top" width="100%" alt="phone">
                                                 <div class="card-body" style="padding: 5px">
                                                     <b style="white-space: nowrap">{{ $item->tipo->nombre }}</b> <br>
                                                     <small style="font-size: 10px white-space: nowrap">{{ $item->tipo->marca->nombre }}</small>
@@ -226,8 +227,8 @@
                     <td>
                         <select name="precio[]" class="form-control" id="select-precio-${data.id}" onchange="subTotal(${data.id})" required>
                             <option value="${data.precio_venta}" data-type="credito">${data.precio_venta} - Crédito</option>
-                            <option value="${data.precio_venta_contado}" data-type="contado">${data.precio_venta_contado} - Contado</option>   
-                        </select>    
+                            <option value="${data.precio_venta_contado}" data-type="contado">${data.precio_venta_contado} - Contado</option>
+                        </select>
                     </td>
                     <td><input type="number" min="0" step="1" name="cuota_inicial[]" id="input-cuota_inicial-${data.id}" value="0" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" class="form-control" /></td>
                     <td><input type="number" min="1" step="1" name="cuotas[]" id="input-cuotas-${data.id}" value="1" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" class="form-control" required /></td>
@@ -235,8 +236,8 @@
                         <select name="periodo[]" class="form-control" required>
                             <option value="mensual">Mensual</option>
                             <option value="semanal">Semanal</option>
-                            <option value="diario">Diario</option>    
-                        </select>    
+                            <option value="diario">Diario</option>
+                        </select>
                     </td>
                     <td style="text-align: right"><input type="hidden" name="pago_cuota[]" id="input-pago_cuota-${data.id}" value="${data.precio_venta}" /><h4 id="label-pago_cuota-${data.id}">${data.precio_venta}</h4></td>
                     <td><button type="button" onclick="removeTr(${data.id})" class="btn btn-link"><i class="voyager-trash text-danger"></i></button></td>
@@ -259,9 +260,9 @@
 
             let cuotaInicial = $(`#input-cuota_inicial-${index}`).val() ? parseFloat($(`#input-cuota_inicial-${index}`).val()) : 0;
             let cantidadCuotas = $(`#input-cuotas-${index}`).val() ? parseFloat($(`#input-cuotas-${index}`).val()) : 0;
-            
+
             if(cantidadCuotas > 0){
-                let cuota = (precio - cuotaInicial) / cantidadCuotas;            
+                let cuota = (precio - cuotaInicial) / cantidadCuotas;
                 $(`#label-pago_cuota-${index}`).text(`${cuota.toFixed(2)}`);
                 $(`#input-pago_cuota-${index}`).val(cuota);
             }else{

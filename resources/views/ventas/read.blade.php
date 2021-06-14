@@ -39,7 +39,7 @@
                             <div class="panel-body" style="padding-top:0;">
                                 <p>
                                     @foreach ($reg->garantes as $item)
-                                    {{ $item->persona->nombre_completo }} &nbsp;       
+                                    {{ $item->persona->nombre_completo }} &nbsp;
                                     @endforeach
                                 </p>
                             </div>
@@ -102,7 +102,7 @@
                                                                 $imagenes = json_decode($item->producto->tipo->imagenes);
                                                                 $img = url('storage/'.str_replace('.', '-cropped.', $imagenes[0]));
                                                             }
-                                                            
+
                                                             foreach ($item->cuotas as $cuota) {
                                                                 foreach ($cuota->pagos as $pago) {
                                                                     $pagos += $pago->monto;
@@ -120,8 +120,8 @@
                                                         </table>
                                                     </td>
                                                     <td style="text-align: right">Bs. {{ $item->precio }}</td>
-                                                    <td style="text-align: right">Bs. {{ number_format($pagos, 2, ',', '.') }}</td>
-                                                    <td style="text-align: right">Bs. {{ number_format($item->precio - $pagos, 2, ',', '.') }}</td>
+                                                    <td style="text-align: right">Bs. {{ $pagos }}</td>
+                                                    <td style="text-align: right">Bs. {{ $item->precio - $pagos }}</td>
                                                     <td style="text-align: right">
                                                         <button class="btn btn-success btn-sm btn-detalle" data-toggle="modal" data-target="#detalle_modal" data-cuotas='@json($item->cuotas)'>
                                                             <i class="voyager-list"></i> <span class="hidden-xs hidden-sm">Detalles</span>

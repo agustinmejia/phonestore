@@ -24,7 +24,7 @@
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-                        
+
                         <div class="table-responsive">
                             <table id="dataTable" class="table table-hover">
                             </table>
@@ -64,9 +64,6 @@
     <script src="{{ url('js/main.js') }}"></script>
     <script>
         $(document).ready(function() {
-            let searchParams = new URLSearchParams(window.location.search)
-            let estado = searchParams.get('estado')
-            $('#select-estado').val(estado);
             $('[data-toggle="tooltip"]').tooltip()
             let columns = [
                 { data: 'id', title: 'id' },
