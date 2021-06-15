@@ -27,7 +27,8 @@ class ProductosController extends Controller
      */
     public function index()
     {
-        return view('productos.browse');
+        $productos = Producto::with(['tipo.marca', 'venta.cuotas.pagos'])->where('deleted_at', NULL)->get();
+        return view('productos.browse', compact('productos'));
     }
 
     public function list()

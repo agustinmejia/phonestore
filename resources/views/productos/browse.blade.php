@@ -27,10 +27,60 @@
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-
                         <div class="table-responsive">
                             <table id="dataTable" class="table table-hover">
                             </table>
+                        </div>
+                        <div class="clearfix"></div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h3>Resumen</h3>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Stock de equipos</th>
+                                            <th>Equipos a crédito</th>
+                                            <th>Inversión total <span data-toggle="tooltip" data-placement="top" title="Incluye tanto los equipos en stock como los equipos que están a crédito"><span class="voyager-question"></span></span></th>
+                                            <th>Pagos realizados</th>
+                                            <th>Deuda total</th>
+                                            <th>Ganancia esperada <span data-toggle="tooltip" data-placement="top" title="No toma en cuenta los productos existentes en stock"><span class="voyager-question"></span></span> </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @php
+                                            $inversion = 0;
+                                            $inversion_credito = 0;
+                                            $pagos = 0;
+                                            $total = 0;
+                                            $costo = 0;
+                                            foreach ($productos as $producto) {
+                                                if($producto->estado != "vendido"){
+                                                    $inversion += $producto->precio_compra;
+                                                }
+                                                if($producto->venta && $producto->estado != "vendido"){
+                                                    $total += $producto->venta->precio;
+                                                    foreach ($producto->venta->cuotas as $cuota) {
+                                                        foreach ($cuota->pagos as $pago) {
+                                                            $pagos += $pago->monto;
+                                                        }
+                                                    }
+                                                    $inversion_credito += $producto->precio_compra;
+                                                    $costo += $producto->venta->precio;
+                                                }
+                                            }
+                                        @endphp     
+                                        <tr>
+                                            <td><h4>{{ $productos->where("estado", "disponible")->count() }} Unids.</h4></td>
+                                            <td><h4>{{ $productos->where("estado", "crédito")->count() }} Unids.</h4></td>
+                                            <td><h4>{{ number_format($inversion, 0, ',', '.') }} Bs.</h4></td>
+                                            <td><h4>{{ number_format($pagos, 0, ',', '.') }} Bs.</h4></td>
+                                            <td><h4>{{ number_format($total - $pagos, 0, ',', '.') }} Bs.</h4></td>
+                                            <td><h4>{{ number_format($costo - $inversion_credito, 0, ',', '.') }} Bs.</h4></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <small>En el cuadro superior no se toman en cuenta los equipos vendidos al contado ni los que ya fueron cancelados en su totalidad.</small>
+                            </div>
                         </div>
                     </div>
                 </div>
