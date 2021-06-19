@@ -100,7 +100,7 @@
             let searchParams = new URLSearchParams(window.location.search)
             let group = searchParams.get('group')
             $('#select-group').val(group);
-            $('[data-toggle="tooltip"]').tooltip()
+            $('[data-toggle="tooltip"]').tooltip();
             if(!group){
                 let columns = [
                     { data: 'id', title: 'id' },

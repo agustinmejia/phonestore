@@ -39,6 +39,9 @@ class ComprasController extends Controller
         return
             Datatables::of($data)
             ->addIndexColumn()
+            ->addColumn('fecha', function($row){
+                return date('d/m/Y', strtotime($row->created_at)).'<br><small>'.Carbon::parse($row->created_at)->diffForHumans().'</small>';
+            })
             ->addColumn('proveedor', function($row){
                 return '
                     <div class="col-md-12">
@@ -52,7 +55,7 @@ class ComprasController extends Controller
             ->addColumn('detalles', function($row){
                 $detalles = '';
                 foreach ($row->producto as $item) {
-                    $detalles .= '<li style="padding: 2px">'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b> <label class="label label-'.($item->estado == 'disponible' ? 'success' : 'danger').'">'.$item->estado.'</label> </li>';
+                    $detalles .= '<li style="padding: 2px">'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b> <label class="label label-'.($item->estado == 'disponible' ? 'success' : 'danger').'">'.$item->estado.'</label> <br> <small>IMEI '.$item->imei.'</small> </li>';
                 }
                 return '
                     <div class="col-md-12">
@@ -80,7 +83,7 @@ class ComprasController extends Controller
                         ';
                 return $actions;
             })
-            ->rawColumns(['proveedor', 'empleado', 'detalles', 'action'])
+            ->rawColumns(['fecha', 'proveedor', 'empleado', 'detalles', 'action'])
             ->make(true);
     }
 

@@ -67,6 +67,7 @@
             $('[data-toggle="tooltip"]').tooltip()
             let columns = [
                 { data: 'id', title: 'id' },
+                { data: 'fecha', title: 'Fecha' },
                 { data: 'proveedor', title: 'proveedor' },
                 { data: 'empleado', title: 'Empleado' },
                 { data: 'detalles', title: 'Detalles' },

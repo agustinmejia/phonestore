@@ -20,4 +20,8 @@ class VentasDetalle extends Model
     function cuotas(){
         return $this->hasMany(VentasDetallesCuota::class);
     }
+
+    function venta(){
+        return $this->belongsTo(Venta::class, 'venta_id');
+    }
 }

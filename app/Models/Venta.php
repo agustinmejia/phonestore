@@ -10,7 +10,7 @@ class Venta extends Model
     use HasFactory;
 
     protected $fillable = [
-        'persona_id', 'user_id', 'fecha', 'observaciones'
+        'persona_id', 'user_id', 'fecha', 'observaciones', 'descuento', 'iva'
     ];
 
     function detalles(){

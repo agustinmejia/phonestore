@@ -38,24 +38,26 @@ class VentasController extends Controller
 
     public function list()
     {
-        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'garantes.persona', 'detalles.cuotas.pagos'])
-                        ->where('deleted_at', NULL)->get();
+        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'garantes.persona', 'detalles.cuotas.pagos'])->where('deleted_at', NULL)->get();
         // return $data;
 
         return
             Datatables::of($data)
             ->addIndexColumn()
+            ->addColumn('fecha', function($row){
+                return date('d/m/Y', strtotime($row->created_at)).'<br><small>'.Carbon::parse($row->created_at)->diffForHumans().'</small>';
+            })
             ->addColumn('cliente', function($row){
                 return '
                     <div class="col-md-12">
                         <b>'.$row->cliente->nombre_completo.'</b><br>
-                        <small>Cel: '.('<a href="tel:'.$row->cliente->telefono.'">'.$row->cliente->telefono.'</a>' ?? 'No definido').'</small>
+                        <small>Telf: '.('<a href="tel:'.$row->cliente->telefono.'">'.$row->cliente->telefono.'</a>' ?? 'No definido').'</small>
                     </div>';
             })
             ->addColumn('garante', function($row){
                 $garantes = '';
                 foreach ($row->garantes as $item) {
-                    $garantes .= '<li>'.$item->persona->nombre_completo.' <br> <small>Cel: '.('<a href="tel:'.$item->persona->telefono.'">'.$item->persona->telefono.'</a>' ?? 'No definido').'</small></li>';
+                    $garantes .= '<li>'.$item->persona->nombre_completo.' <br> <small>Telf: '.('<a href="tel:'.$item->persona->telefono.'">'.$item->persona->telefono.'</a>' ?? 'No definido').'</small></li>';
                 }
                 return '
                     <div class="col-md-12">
@@ -65,7 +67,7 @@ class VentasController extends Controller
             ->addColumn('detalles', function($row){
                 $detalles = '';
                 foreach ($row->detalles as $item) {
-                    $detalles .= '<li>'.$item->producto->tipo->marca->nombre.' <b>'.$item->producto->tipo->nombre.'</b></li>';
+                    $detalles .= '<li>'.$item->producto->tipo->marca->nombre.' <b>'.$item->producto->tipo->nombre.'</b> <br> <small>IMEI '.$item->producto->imei.'</small></li>';
                 }
                 return '
                     <div class="col-md-12">
@@ -82,9 +84,9 @@ class VentasController extends Controller
             ->addColumn('deuda', function($row){
                 $total = 0;
                 $pagos = 0;
+                $proximo_pago = '';
                 foreach ($row->detalles as $item) {
                     $total += $item->precio;
-                    $proximo_pago = '';
                     foreach ($item->cuotas as $cuota) {
                         if($cuota->estado == 'pendiente' && !$proximo_pago){
                             $proximo_pago = $cuota->fecha;
@@ -110,7 +112,7 @@ class VentasController extends Controller
                         ';
                 return $actions;
             })
-            ->rawColumns(['cliente', 'garante', 'detalles', 'total', 'deuda', 'action'])
+            ->rawColumns(['fecha', 'cliente', 'garante', 'detalles', 'total', 'deuda', 'action'])
             ->make(true);
     }
 
@@ -123,7 +125,9 @@ class VentasController extends Controller
     {
         $type = 'add';
         // $productos = Producto::with(['tipo.marca'])->where('deleted_at', NULL)->where('estado', 'disponible')->orderBy('precio_venta', 'ASC')->get();
-        $productos = Marca::with(['tipos.productos.tipo.marca'])->get();
+        $productos = Marca::with(['tipos.productos.tipo.marca', 'tipos.productos' => function($q){
+            $q->where('estado', 'disponible');
+        }])->get();
         // dd($productos);
         $personas = Persona::all()->where('deleted_at', NULL);
         return view('ventas.add-edit', compact('type', 'productos', 'personas'));
@@ -141,11 +145,14 @@ class VentasController extends Controller
         DB::beginTransaction();
         try {
             $fecha = $request->fecha ?? date('Y-m-d');
+            $fecha_inicio = $request->fecha_inicio ?? date('Y-m-d');
             $venta = Venta::create([
                 'persona_id' => $request->cliente_id,
                 'user_id' => Auth::user()->id,
                 'observaciones' => $request->observaciones,
-                'fecha' => $fecha
+                'fecha' => $fecha,
+                'descuento' => $request->descuento,
+                'iva' => $request->iva
             ]);
 
             for ($i=0; $i < count($request->garante_id); $i++) {
@@ -166,22 +173,26 @@ class VentasController extends Controller
                     'estado' => $request->tipo_venta[$i] == 'credito' ? 'crédito' : 'vendido'
                 ]);
 
+                $pago_cuota = in_array($request->producto_id[$i], $request->cuota_inicial_pago ?? []) ? true : false;
+
                 // Pago de la cuota inicial
                 $cuota = VentasDetallesCuota::create([
                     'ventas_detalle_id' => $detalle->id,
                     'tipo' => $request->tipo_venta[$i] == 'credito' ? 'cuota inicial' : 'Pago del equipo',
                     'monto' => $request->cuota_inicial[$i] ?? 0,
                     'fecha' => $fecha,
-                    'estado' => 'pagada'
+                    'estado' => $pago_cuota ? 'pagada' : 'pendiente'
                 ]);
 
-                if($request->cuota_inicial[$i]){
-                    VentasDetallesCuotasPago::create([
-                        'ventas_detalles_cuota_id' => $cuota->id,
-                        'user_id' => Auth::user()->id,
-                        'monto' => $request->cuota_inicial[$i],
-                        'observaciones' => 'Pago al momento de llevar el equipo.'
-                    ]);
+                if ($pago_cuota) {
+                    if($request->cuota_inicial[$i]){
+                        VentasDetallesCuotasPago::create([
+                            'ventas_detalles_cuota_id' => $cuota->id,
+                            'user_id' => Auth::user()->id,
+                            'monto' => $request->cuota_inicial[$i],
+                            'observaciones' => 'Pago al momento de llevar el equipo.'
+                        ]);
+                    }
                 }
 
                 // Calcular periodo de pagos
@@ -206,12 +217,12 @@ class VentasController extends Controller
                     }
 
                     for ($j=0; $j < $request->cuotas[$i]; $j++) {
-                        $fecha = date("Y-m-d", strtotime($fecha."+ $cantidad $periodo"));
+                        $fecha_inicio = date("Y-m-d", strtotime($fecha_inicio."+ $cantidad $periodo"));
                         VentasDetallesCuota::create([
                             'ventas_detalle_id' => $detalle->id,
                             'tipo' => 'cuota',
                             'monto' => $request->pago_cuota[$i],
-                            'fecha' => $fecha,
+                            'fecha' => $fecha_inicio,
                             'estado' => 'pendiente'
                         ]);
                     }
@@ -222,6 +233,7 @@ class VentasController extends Controller
             return redirect()->route('ventas.index')->with(['message' => 'Venta guardada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
+            dd($th);
             return redirect()->route('ventas.index')->with(['message' => 'Ocurrio un error al guardar la venta.', 'alert-type' => 'error']);
         }
     }
@@ -275,22 +287,42 @@ class VentasController extends Controller
     }
 
     public function pago_store(Request $request){
+        // dd($request);
         DB::beginTransaction();
         try {
-            $pagos = VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $request->ventas_detalles_cuota_id)->where('deleted_at', NULL)->get();
-            $total_pagos = $pagos->sum('monto') + $request->pago;
+            if($request->cuotas){
+                foreach ($request->cuotas as $item) {
+                    $cuota = VentasDetallesCuota::find($item);
+                    $cuota->estado = 'pagada';
+                    $cuota->descuento = $request->descuento;
+                    $cuota->save();
 
-            VentasDetallesCuotasPago::create([
-                'ventas_detalles_cuota_id' => $request->ventas_detalles_cuota_id,
-                'user_id' => Auth::user()->id,
-                'monto' => $request->pago,
-                'observaciones' => $request->observaciones
-            ]);
+                    $pagos = VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $item)->where('deleted_at', NULL)->get();
+                    $total_pagos = $pagos->sum('monto');
 
-            if($total_pagos >= $request->monto){
-                VentasDetallesCuota::where('id', $request->ventas_detalles_cuota_id)->update([
-                    'estado' => 'pagada'
+                    VentasDetallesCuotasPago::create([
+                        'ventas_detalles_cuota_id' => $item,
+                        'user_id' => Auth::user()->id,
+                        'monto' => $cuota->monto - $total_pagos,
+                        'observaciones' => $request->observaciones
+                    ]);
+                }
+            }else{
+                VentasDetallesCuotasPago::create([
+                    'ventas_detalles_cuota_id' => $request->ventas_detalles_cuota_id,
+                    'user_id' => Auth::user()->id,
+                    'monto' => $request->pago,
+                    'observaciones' => $request->observaciones_alt
                 ]);
+
+                // Obtener todos los pagos de dicha cuota para cambiar su estado a pagada
+                $pagos = VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $request->ventas_detalles_cuota_id)->where('deleted_at', NULL)->get();
+                $total_pagos = $pagos->sum('monto');
+                if($total_pagos >= $request->monto){
+                    VentasDetallesCuota::where('id', $request->ventas_detalles_cuota_id)->update([
+                        'estado' => 'pagada'
+                    ]);
+                }
             }
 
             DB::commit();

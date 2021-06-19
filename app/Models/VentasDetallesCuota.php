@@ -10,10 +10,14 @@ class VentasDetallesCuota extends Model
     use HasFactory;
 
     protected $fillable = [
-        'ventas_detalle_id', 'tipo', 'monto', 'fecha', 'estado'
+        'ventas_detalle_id', 'tipo', 'monto', 'descuento', 'fecha', 'estado'
     ];
 
     function pagos(){
         return $this->hasMany(VentasDetallesCuotasPago::class);
+    }
+
+    function detalle(){
+        return $this->belongsTo(VentasDetalle::class, 'ventas_detalle_id');
     }
 }

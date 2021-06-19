@@ -129,6 +129,17 @@ class SettingsTableSeeder extends Seeder
                 'order' => 5,
                 'group' => 'Admin',
             ),
+            10 => 
+            array (
+                'id' => 11,
+                'key' => 'ventas.iva',
+                'display_name' => 'IVA',
+                'value' => '0.13',
+                'details' => NULL,
+                'type' => 'text',
+                'order' => 6,
+                'group' => 'Ventas',
+            ),
         ));
         
         

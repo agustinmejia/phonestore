@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\ProductosController;
+use App\Http\Controllers\ReportesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,4 +41,10 @@ Route::group(['prefix' => 'admin'], function () {
     Route::resource('productos', ProductosController::class);
     Route::get('productos/ajax/list', [ProductosController::class, 'list']);
     Route::get('productos/ajax/list/type', [ProductosController::class, 'list_group_type']);
+
+    // Reportes
+    Route::get('reportes/deudas', [ReportesController::class, 'index_deudas'])->name('index.deudas');
+    Route::get('reportes/deudas/{dias}', [ReportesController::class, 'index_deudas_list']);
+    Route::get('reportes/ventas', [ReportesController::class, 'index_ventas'])->name('index.ventas');
+    Route::post('reportes/ventas/lista', [ReportesController::class, 'ventas_lista'])->name('ventas.lista');
 });

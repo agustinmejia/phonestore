@@ -49,32 +49,7 @@
 
                             <div class="row">
                                 <div class="col-md-8">
-                                    <div class="col-md-12" style="min-height: 300px; overflow-y: auto; border: 1px solid #d8d8d8; padding: 0px">
-                                        {{-- @forelse ($productos as $item)
-                                            @php
-                                                $img = asset('images/phone-default.jpg');
-                                                $imagenes = [];
-                                                if ($item->tipo->imagenes) {
-                                                    $imagenes = json_decode($item->tipo->imagenes);
-                                                    $img = asset('storage/'.str_replace(".", "-cropped.", $imagenes[0]));
-                                                }
-                                            @endphp
-                                            <div class="card col-md-2 card-phone" style="padding: 5px" data-item='@json($item)'>
-                                                <div style="position: absolute; top: 3px; right: 3px">
-                                                    <label class="label label-primary">{{ $item->precio_venta }}</label>
-                                                </div>
-                                                <img src="{{ $img }}" class="card-img-top" width="100%" alt="phone">
-                                                <div class="card-body" style="padding: 5px">
-                                                    <b style="white-space: nowrap">{{ $item->tipo->nombre }}</b> <br>
-                                                    <small style="font-size: 10px white-space: nowrap">{{ $item->tipo->marca->nombre }}</small>
-                                                </div>
-                                                <div id="label-imei-{{ $item->id }}" style="position: absolute; bottom: 3px; left: 0px; right: 0px; background-color: rgba(0,0,0,0.8); display: none">
-                                                    <p class="text-center" style="color: white; margin: 5px; font-size: 11px"><small style="font-size: 9px">IMEI</small> <br> {{ $item->imei }} </p>
-                                                </div>
-                                            </div>
-                                        @empty
-                                            <h3 class="text-muted text-center" style="margin-top: 20px">No hay celulares disponibles</h3>
-                                        @endforelse --}}
+                                    <div class="col-md-12" style="min-height: 430px; max-height: 430px; overflow-y: auto; border: 1px solid #d8d8d8; padding: 0px">
                                         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                             @foreach ($productos as $marca)
                                                 <div class="panel panel-default" style="margin: 0px">
@@ -88,6 +63,7 @@
                                                     <div id="collapse-{{ $marca->id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
                                                         <div class="panel-body">
                                                             @foreach ($marca->tipos as $tipo)
+                                                                @if (count($tipo->productos) > 0)
                                                                 <div class="row">
                                                                     <div class="col-md-12">
                                                                         <ol class="breadcrumb">
@@ -97,7 +73,6 @@
                                                                     </div>
                                                                     <div class="col-md-12">
                                                                         @foreach ($tipo->productos as $item)
-                                                                            @if ($item->estado == 'disponible')
                                                                             @php
                                                                                 $img = asset('images/phone-default.jpg');
                                                                                 $imagenes = [];
@@ -119,10 +94,10 @@
                                                                                     <p class="text-center" style="color: white; margin: 5px; font-size: 11px"><small style="font-size: 9px">IMEI</small> <br> {{ $item->imei }} </p>
                                                                                 </div>
                                                                             </div>
-                                                                            @endif
                                                                         @endforeach
                                                                     </div>
                                                                 </div>
+                                                                @endif
                                                             @endforeach
                                                         </div>
                                                     </div>
@@ -179,17 +154,17 @@
                                         @endif
                                     </div>
                                     <div class="form-group">
+                                        <label>Fecha de inicio de pago <span data-toggle="tooltip" data-placement="top" title="A partir de ésta fecha se generará el calendario de pagos"><span class="voyager-question"></span></span></label>
+                                        <input type="date" name="fecha_inicio" class="form-control" value="{{ date('Y-m-d') }}" required>
+                                        @if ($errors->has('fecha_inicio'))
+                                            @foreach ($errors->get('fecha') as $error)
+                                                <span class="help-block text-danger">{{ $error }}</span>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    <div class="form-group">
                                         <textarea name="observaciones" class="form-control" rows="3" placeholder="Observaciones">{{ isset($reg) ? $reg->observaciones : old('observaciones') }}</textarea>
                                     </div>
-                                    {{-- <div class="form-group">
-                                        <h3 class="text-right" id="label-total">0.00 Bs.</h3>
-                                    </div> --}}
-                                    {{-- <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="proforma" value="1" id="flexCheckChecked">
-                                        <label class="form-check-label" for="flexCheckChecked">
-                                          Generar solo proforma
-                                        </label>
-                                    </div> --}}
                                     <div class="form-group">
                                         <button type="submit" class="btn btn-primary btn-block">Guardar venta <i class="voyager-check"></i></button>
                                     </div>
@@ -205,13 +180,35 @@
                                             <thead>
                                                 <th>Detalles del equipo</th>
                                                 <th style="width: 120px">Precio</th>
-                                                <th style="width: 120px">Cuota inicial Bs.</th>
+                                                <th style="width: 150px">Cuota inicial Bs.</th>
                                                 <th style="width: 120px">Cant. cuotas</th>
                                                 <th>Periodo</th>
-                                                <th style="width: 100px">Cuota Bs.</th>
+                                                <th style="width: 50px">Cuota Bs.</th>
                                                 <th style="width: 50px"></th>
                                             </thead>
                                             <tbody id="table-detalle"></tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right"><b>SUBTOTAL</b></td>
+                                                    <td colspan="2"><input type="hidden" value="0" id="input-subtotal" /><h4 style="text-align: right" id="label-subtotal">0.00 <small>Bs.</small></h4></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right"><b>DESCUENTO</b></td>
+                                                    <td colspan="2"><input type="number" name="descuento" step="0.1" min="0" value="0" class="form-control" id="input-descuento" onchange="total();total_pago()" onkeyup="total();total_pago()" onclick="$(this).select()" style="text-align: right; font-size: 18px; font-weight: 500; width: 120px" required></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right"><b><input type="checkbox" value="1" id="checkbox-iva" /> IVA</b></td>
+                                                    <td colspan="2"><input type="hidden" value="0" id="input-iva" name="iva" /><h4 style="text-align: right" id="label-iva">0.00 <small>Bs.</small></h4></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right"><b>TOTAL</b></td>
+                                                    <td colspan="2"><h4 style="text-align: right" id="label-total">0.00 <small>Bs.</small></h4></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="5" style="text-align: right"><b>TOTAL A PAGAR</b></td>
+                                                    <td colspan="2"><h4 style="text-align: right" id="label-pago">0.00 <small>Bs.</small></h4></td>
+                                                </tr>
+                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
@@ -236,13 +233,15 @@
 
 @section('javascript')
     <script>
+        const IVA = parseFloat('{{ setting("ventas.iva") ?? 0.13 }}');
         $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
             $('.card-phone').click(function(){
                 let producto = $(this).data('item');
                 if(!$(`#tr-${producto.id}`)[0]){
                     addTr(producto);
                 }else{
-                    toastr.warning('El producto ya fue elegido', 'Advertencia');
+                    toastr.warning('El equipo ya fue elegido', 'Advertencia');
                 }
             });
 
@@ -252,6 +251,17 @@
             }).mouseleave(function(){
                 let item = $(this).data('item');
                 $(`#label-imei-${item.id}`).fadeOut();
+            });
+            $('#checkbox-iva').click(function(){
+                if ($('#checkbox-iva').is(':checked')) {
+                    let subtotal = parseFloat($('#input-subtotal').val());
+                    $('#label-iva').html(`${(subtotal * IVA).toFixed(2)} <small>Bs.</small>`);
+                    $('#input-iva').val(subtotal * IVA);
+                }else{
+                    $('#label-iva').html(`0.00 <small>Bs.</small>`);
+                    $('#input-iva').val(0);
+                }
+                total();
             });
         });
         function addTr(data){
@@ -279,13 +289,20 @@
                         <input type="hidden" name="tipo_venta[]" id="input-tipo_venta-${data.id}" value="credito" required/>
                     </td>
                     <td>
-                        <select name="precio[]" class="form-control" id="select-precio-${data.id}" onchange="subTotal(${data.id})" required>
+                        <select name="precio[]" class="form-control select-precio" id="select-precio-${data.id}" onchange="subTotal(${data.id})" required>
                             <option value="${data.precio_venta}" data-type="credito">${data.precio_venta} - Crédito</option>
                             <option value="${data.precio_venta_contado}" data-type="contado">${data.precio_venta_contado} - Contado</option>
                         </select>
                     </td>
-                    <td><input type="number" min="0" step="1" name="cuota_inicial[]" id="input-cuota_inicial-${data.id}" value="0" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" class="form-control" /></td>
-                    <td><input type="number" min="1" step="1" name="cuotas[]" id="input-cuotas-${data.id}" value="1" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" class="form-control" required /></td>
+                    <td>
+                        <div class="input-group">
+                            <input type="number" min="0" step="1" name="cuota_inicial[]" id="input-cuota_inicial-${data.id}" value="0" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" onclick="$(this).select()" class="form-control" />
+                            <span class="input-group-addon">
+                                <input type="checkbox" class="checkbox-cuota_inicial" onclick="total_pago()" checked name="cuota_inicial_pago[]" value="${data.id}" data-id="${data.id}" />
+                            </span>
+                        </div>
+                        </td>
+                    <td><input type="number" min="1" step="1" name="cuotas[]" id="input-cuotas-${data.id}" value="1" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" onclick="$(this).select()" class="form-control" required /></td>
                     <td>
                         <select name="periodo[]" class="form-control" required>
                             <option value="mensual">Mensual</option>
@@ -297,7 +314,18 @@
                     <td><button type="button" onclick="removeTr(${data.id})" class="btn btn-link"><i class="voyager-trash text-danger"></i></button></td>
                 </tr>
             `);
+
+            let subtotal = 0;
+            $('.select-precio').each(function(){
+                subtotal += parseFloat($(this).val());
+            });
+            $('#label-subtotal').html(`${subtotal.toFixed(2)} <small>Bs.</small>`);
+            $('#input-subtotal').val(subtotal);
+
             showHelp();
+            total();
+            total_pago();
+            toastr.info('Equipo agregado a las lista', 'Información');
         }
         function subTotal(index){
 
@@ -322,6 +350,25 @@
             }else{
                 toastr.error('Debes ingresar el número de cuotas', 'Error');
             }
+            total_pago();
+        }
+        function total(){
+            let subtotal = parseFloat($('#input-subtotal').val());
+            let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
+            let iva = parseFloat($('#input-iva').val());
+            $('#label-total').html(`${(subtotal-descuento+iva).toFixed(2)} <small>Bs.</small>`);
+        }
+        function total_pago(){
+            let total_pago = 0;
+            let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
+            $('.checkbox-cuota_inicial').each(function(){
+                if($(this).is(':checked')){
+                    let id = $(this).data('id');
+                    let monto = $(`#input-cuota_inicial-${id}`).val() ? $(`#input-cuota_inicial-${id}`).val() : '0';
+                    total_pago += parseFloat(monto);
+                }
+            });
+            $('#label-pago').html(`${(total_pago-descuento).toFixed(2)} <small>Bs.</small>`);
         }
         function removeTr(index){
             $(`#tr-${index}`).remove();

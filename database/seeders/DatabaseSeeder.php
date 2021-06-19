@@ -18,8 +18,7 @@ class DatabaseSeeder extends Seeder
             MenusTableSeeder::class,
             RolesTableSeeder::class,
             PermissionsTableSeeder::class,
-            PermissionRoleTableSeeder::class,
-            SettingsTableSeeder::class,
+            PermissionRoleTableSeeder::class
         ]);
         $this->call(UsersTableSeeder::class);
         $this->call(DataTypesTableSeeder::class);
@@ -28,5 +27,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MarcasTableSeeder::class);
         $this->call(ProveedoresTableSeeder::class);
         $this->call(TiposProductosTableSeeder::class);
+        $this->call(SettingsTableSeeder::class);
     }
 }

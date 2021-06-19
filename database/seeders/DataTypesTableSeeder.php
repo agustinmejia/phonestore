@@ -145,6 +145,24 @@ class DataTypesTableSeeder extends Seeder
                 'created_at' => '2021-05-19 09:43:46',
                 'updated_at' => '2021-05-19 09:43:46',
             ),
+            7 => 
+            array (
+                'id' => 9,
+                'name' => 'pedidos',
+                'slug' => 'pedidos',
+                'display_name_singular' => 'Pedido',
+                'display_name_plural' => 'Pedidos',
+                'icon' => 'voyager-ticket',
+                'model_name' => 'App\\Models\\Pedido',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
+                'created_at' => '2021-06-19 14:45:55',
+                'updated_at' => '2021-06-19 14:53:18',
+            ),
         ));
         
         

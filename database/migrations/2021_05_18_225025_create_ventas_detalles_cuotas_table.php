@@ -18,6 +18,7 @@ class CreateVentasDetallesCuotasTable extends Migration
             $table->foreignId('ventas_detalle_id')->nullable()->constrained('ventas_detalles');
             $table->string('tipo')->nullable();
             $table->decimal('monto', 10, 2)->nullable();
+            $table->decimal('descuento', 10, 2)->nullable()->default(0);
             $table->date('fecha')->nullable();
             $table->string('estado')->nullable();
             $table->timestamps();
