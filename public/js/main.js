@@ -33,3 +33,7 @@ function customDataTable(url, columns = []){
         }
     });
 }
+
+function deleteItem(url){
+    $('#delete_form').attr('action', url);
+}

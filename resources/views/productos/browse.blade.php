@@ -87,6 +87,47 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal crear cliente -->
+    <form id="form" action="#" method="post">
+        <div class="modal fade" id="modalequipo" tabindex="-1" role="dialog" aria-labelledby="modalequipoLabel">
+            <div class="modal-dialog modal-primary" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalequipoLabel"><span class="voyager-edit"></span> Editar equipo</h4>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="id">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>Precio de compra</label>
+                                    <input type="number" step="0.1" min="0.1" name="precio_compra" class="form-control" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Precio de venta al contado</label>
+                                    <input type="number" step="1" min="1" name="precio_venta_contado" class="form-control" required />
+                                </div>
+                                <div class="form-group">
+                                    <label>Precio de venta al crédito</label>
+                                    <input type="number" step="1" min="1" name="precio_venta" class="form-control" required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @include('partials.modal-delete')
 @stop
 
 @section('css')
@@ -108,7 +149,7 @@
                     { data: 'precios', title: 'Precios' },
                     { data: 'estado', title: 'Estado' },
                     { data: 'detalles', title: 'Detalles' },
-                    // { data: 'precio_venta', title: 'Precio venta crédito' },
+                    { data: 'action', title: 'Acciones', orderable: false, searchable: false },
                 ];
                 customDataTable("{{ url('admin/productos/ajax/list') }}", columns);
             }else if(group == 'type'){
@@ -121,7 +162,6 @@
                     { data: 'pagos', title: 'Pagos Bs.' },
                     { data: 'deuda', title: 'Deuda Bs.' },
                     { data: 'ganancia', title: 'Ganancia Bs.' },
-                    // { data: 'action', title: 'Acciones', orderable: false, searchable: false },
                 ];
                 customDataTable("{{ url('admin/productos/ajax/list/type') }}", columns);
             }
@@ -135,5 +175,14 @@
                 }
             });
         });
+
+        function edit(id, precio_compra, precio_venta_contado, precio_venta_credito){
+            let url = "{{ url('admin/productos') }}/"+id;
+            $('#form').attr('action', url);
+            $('#form input[name="id"]').val(id);
+            $('#form input[name="precio_compra"]').val(precio_compra);
+            $('#form input[name="precio_venta_contado"]').val(precio_venta_contado);
+            $('#form input[name="precio_venta"]').val(precio_venta_credito);
+        }
     </script>
 @stop

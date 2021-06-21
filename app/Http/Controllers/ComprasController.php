@@ -55,7 +55,22 @@ class ComprasController extends Controller
             ->addColumn('detalles', function($row){
                 $detalles = '';
                 foreach ($row->producto as $item) {
-                    $detalles .= '<li style="padding: 2px">'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b> <label class="label label-'.($item->estado == 'disponible' ? 'success' : 'danger').'">'.$item->estado.'</label> <br> <small>IMEI '.$item->imei.'</small> </li>';
+                    $clase = '';
+                    switch ($item->estado) {
+                        case 'disponible':
+                            $clase = 'success';
+                            break;
+                        case 'crédito':
+                            $clase = 'info';
+                            break;
+                        case 'vendido':
+                            $clase = 'primary';
+                            break;
+                        case 'eliminado':
+                            $clase = 'danger';
+                            break;
+                    }
+                    $detalles .= '<li style="padding: 2px">'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b> <label class="label label-'.$clase.'">'.$item->estado.'</label> <br> <small>IMEI '.$item->imei.'</small> </li>';
                 }
                 return '
                     <div class="col-md-12">
@@ -76,7 +91,7 @@ class ComprasController extends Controller
                         <a href="'.route('compras.show', ['compra' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
-                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('.$row->id.')">
+                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/compras/".$row->id)."'".')">
                             <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
                         </a>
                     </div>

@@ -14,7 +14,7 @@ class Compra extends Model
     ];
 
     function producto(){
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class)->withTrashed();
     }
 
     function proveedor(){

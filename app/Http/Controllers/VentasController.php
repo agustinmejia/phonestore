@@ -105,7 +105,7 @@ class VentasController extends Controller
                         <a href="'.route('ventas.show', ['venta' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
-                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('.$row->id.')">
+                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/ventas/".$row->id)."'".')">
                             <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
                         </a>
                     </div>
@@ -129,7 +129,7 @@ class VentasController extends Controller
             $q->where('estado', 'disponible');
         }])->get();
         // dd($productos);
-        $personas = Persona::all()->where('deleted_at', NULL);
+        $personas = Persona::where('deleted_at', NULL)->orderBy('nombre_completo', 'ASC')->get();
         return view('ventas.add-edit', compact('type', 'productos', 'personas'));
     }
 
@@ -156,9 +156,13 @@ class VentasController extends Controller
             ]);
 
             for ($i=0; $i < count($request->garante_id); $i++) {
+                $persona = Persona::find($request->garante_id[$i]);
+                if(!$persona){
+                    $persona = Persona::create(['nombre_completo' => $request->garante_id[$i]]);
+                }
                 VentasGarante::create([
                     'venta_id' => $venta->id,
-                    'persona_id' => $request->garante_id[$i]
+                    'persona_id' => $persona->id
                 ]);
             }
 
@@ -233,7 +237,6 @@ class VentasController extends Controller
             return redirect()->route('ventas.index')->with(['message' => 'Venta guardada exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollback();
-            dd($th);
             return redirect()->route('ventas.index')->with(['message' => 'Ocurrio un error al guardar la venta.', 'alert-type' => 'error']);
         }
     }

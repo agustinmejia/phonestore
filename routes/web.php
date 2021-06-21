@@ -7,6 +7,7 @@ use App\Http\Controllers\ComprasController;
 use App\Http\Controllers\VentasController;
 use App\Http\Controllers\ProductosController;
 use App\Http\Controllers\ReportesController;
+use App\Http\Controllers\PersonasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,4 +48,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('reportes/deudas/{dias}', [ReportesController::class, 'index_deudas_list']);
     Route::get('reportes/ventas', [ReportesController::class, 'index_ventas'])->name('index.ventas');
     Route::post('reportes/ventas/lista', [ReportesController::class, 'ventas_lista'])->name('ventas.lista');
+
+    // Reportes
+    Route::post('cliente/store', [PersonasController::class, 'store'])->name('cliente.store');
 });

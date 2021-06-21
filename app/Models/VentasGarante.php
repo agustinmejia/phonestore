@@ -14,6 +14,6 @@ class VentasGarante extends Model
     ];
 
     function persona(){
-        return $this->belongsTo(Persona::class, 'persona_id');
+        return $this->belongsTo(Persona::class, 'persona_id')->withTrashed();
     }
 }

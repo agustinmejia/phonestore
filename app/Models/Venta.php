@@ -22,7 +22,7 @@ class Venta extends Model
     }
 
     function cliente(){
-        return $this->belongsTo(Persona::class, 'persona_id');
+        return $this->belongsTo(Persona::class, 'persona_id')->withTrashed();
     }
 
     function empleado(){

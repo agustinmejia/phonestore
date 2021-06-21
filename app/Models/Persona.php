@@ -10,4 +10,8 @@ class Persona extends Model
 {
     use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
+
+    protected $fillable = [
+        'nombre_completo', 'ci', 'telefono', 'direccion', 'trabajo', 'foto', 'archivos'
+    ];
 }

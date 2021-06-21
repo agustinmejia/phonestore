@@ -16,7 +16,7 @@ class Producto extends Model
     ];
 
     function tipo(){
-        return $this->belongsTo(TiposProducto::class, 'tipos_producto_id');
+        return $this->belongsTo(TiposProducto::class, 'tipos_producto_id')->withTrashed();
     }
 
     function venta(){

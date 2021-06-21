@@ -71,7 +71,7 @@
                                                                             <li class="active">{{ $tipo->nombre }}</li>
                                                                         </ol>
                                                                     </div>
-                                                                    <div class="col-md-12">
+                                                                    <div class="col-md-12" style="margin: 0px">
                                                                         @foreach ($tipo->productos as $item)
                                                                             @php
                                                                                 $img = asset('images/phone-default.jpg');
@@ -110,14 +110,14 @@
                                     <div class="form-group">
                                         <label>Cliente</label>
                                         <div class="input-group">
-                                            <select name="cliente_id" id="select-cliente_id" class="form-control select2" required>
+                                            <select name="cliente_id" id="select-cliente_id" class="form-control" required>
                                                 <option disabled selected value="">-- Seleccionar cliente --</option>
                                                 @foreach ($personas as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->nombre_completo }} - {{ $item->nit ?? 'NN' }}</option>
+                                                    <option value="{{ $item->id }}">{{ $item->nombre_completo }} - {{ $item->ci ?? 'NN' }}</option>
                                                 @endforeach
                                             </select>
                                             <div class="input-group-btn">
-                                                <a href="{{ route('voyager.personas.create') }}" class="btn btn-primary" style="margin: 0px">Nuevo</a>
+                                                <a href="#" data-toggle="modal" data-target="#modalCliente" class="btn btn-primary" style="margin: 0px">Nuevo</a>
                                             </div>
                                         </div>
                                         @if ($errors->has('cliente_id'))
@@ -128,16 +128,12 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Garante(s)</label>
-                                        <div class="input-group">
-                                            <select name="garante_id[]" id="select-garante_id" class="form-control select2" multiple required>
-                                                @foreach ($personas as $item)
-                                                    <option value="{{ $item->id }}">{{ $item->nombre_completo }} - {{ $item->nit ?? 'NN' }}</option>
-                                                @endforeach
-                                            </select>
-                                            <div class="input-group-btn">
-                                                <a href="{{ route('voyager.personas.create') }}" class="btn btn-primary" style="margin: 0px">Nuevo</a>
-                                            </div>
-                                        </div>
+                                        <select name="garante_id[]" id="select-garante_id" multiple class="form-control" required>
+                                            {{-- <option disabled selected value="">-- Seleccionar o registrar garante --</option> --}}
+                                            @foreach ($personas as $item)
+                                                <option value="{{ $item->id }}">{{ $item->nombre_completo }} - {{ $item->ci ?? 'NN' }}</option>
+                                            @endforeach
+                                        </select>
                                         @if ($errors->has('garante_id'))
                                             @foreach ($errors->get('garante_id') as $error)
                                                 <span class="help-block text-danger">{{ $error }}</span>
@@ -183,7 +179,7 @@
                                                 <th style="width: 150px">Cuota inicial Bs.</th>
                                                 <th style="width: 120px">Cant. cuotas</th>
                                                 <th>Periodo</th>
-                                                <th style="width: 50px">Cuota Bs.</th>
+                                                <th style="min-width: 50px">Cuota Bs.</th>
                                                 <th style="width: 50px"></th>
                                             </thead>
                                             <tbody id="table-detalle"></tbody>
@@ -219,6 +215,54 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal crear cliente -->
+    <form id="form" action="{{ route('cliente.store') }}" method="post">
+        @csrf
+        <input type="hidden" name="ajax" value="1">
+        <div class="modal fade" id="modalCliente" tabindex="-1" role="dialog" aria-labelledby="modalClienteLabel">
+            <div class="modal-dialog modal-primary" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalClienteLabel"><span class="voyager-edit"></span> Nuevo cliente</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="form-group col-md-6">
+                                        <label>Nombre completo</label>
+                                        <input type="text" name="nombre_completo" class="form-control" required />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Lugar de trabajo</label>
+                                        <input type="text" name="trabajo" class="form-control" />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Cédula de identidad</label>
+                                        <input type="text" name="ci" class="form-control" required />
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label>Telefono/celular</label>
+                                        <input type="text" name="telefono" class="form-control" required />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Dirección</label>
+                                    <textarea name="direccion" class="form-control" rows="3"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="btn-guardar">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 @stop
 
 @section('css')
@@ -235,7 +279,11 @@
     <script>
         const IVA = parseFloat('{{ setting("ventas.iva") ?? 0.13 }}');
         $(document).ready(function(){
+            
             $('[data-toggle="tooltip"]').tooltip();
+            $('#select-cliente_id').select2();
+            $('#select-garante_id').select2({tags: true});
+            
             $('.card-phone').click(function(){
                 let producto = $(this).data('item');
                 if(!$(`#tr-${producto.id}`)[0]){
@@ -252,6 +300,7 @@
                 let item = $(this).data('item');
                 $(`#label-imei-${item.id}`).fadeOut();
             });
+            
             $('#checkbox-iva').click(function(){
                 if ($('#checkbox-iva').is(':checked')) {
                     let subtotal = parseFloat($('#input-subtotal').val());
@@ -263,6 +312,23 @@
                 }
                 total();
             });
+
+            $('#form').submit(function(e){
+                e.preventDefault();
+                $('#btn-guardar').html('Guardando...');
+                $('#btn-guardar').attr('disabled', 'disabled');
+                $.post($(this).attr('action'), $(this).serialize(), function(res){
+                    var newOption = new Option(`${res.persona.nombre_completo} - ${res.persona.ci}`, res.persona.id, false, false);
+                    $('#select-cliente_id').append(newOption).trigger('change');
+                    $('#select-cliente_id').val(res.persona.id).trigger('change');
+                    toastr.success('Cliente registrado correctamente', 'Bien hecho!');
+                    $('#btn-guardar').html('Guardar');
+                    $('#btn-guardar').removeAttr('disabled');
+                    $('#modalCliente').modal('hide');
+                    $('#form').trigger("reset");
+                });
+            });
+
         });
         function addTr(data){
             img = "{{ asset('images/phone-default.jpg') }}";
@@ -344,7 +410,7 @@
             let cantidadCuotas = $(`#input-cuotas-${index}`).val() ? parseFloat($(`#input-cuotas-${index}`).val()) : 0;
 
             if(cantidadCuotas > 0){
-                let cuota = (precio - cuotaInicial) / cantidadCuotas;
+                let cuota = Math.ceil((precio - cuotaInicial) / cantidadCuotas);
                 $(`#label-pago_cuota-${index}`).text(`${cuota.toFixed(2)}`);
                 $(`#input-pago_cuota-${index}`).val(cuota);
             }else{

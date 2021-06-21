@@ -198,7 +198,7 @@
                                             <input type="hidden" name="monto" id="input-monto">
                                             <div class="form-group">
                                                 <label>Monto a pagar</label>
-                                                <input type="number" name="pago" id="input-pago" step="0.5" min="0.5" class="form-control" required />
+                                                <input type="number" name="pago" id="input-pago" step="1" min="0" class="form-control" required />
                                             </div>
                                             <div class="form-group">
                                                 <label>Observaciones</label>

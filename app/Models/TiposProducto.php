@@ -16,7 +16,7 @@ class TiposProducto extends Model
     ];
 
     function marca(){
-        return $this->belongsTo(Marca::class, 'marca_id');
+        return $this->belongsTo(Marca::class, 'marca_id')->withTrashed();
     }
 
     function productos(){

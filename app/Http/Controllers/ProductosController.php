@@ -110,7 +110,20 @@ class ProductosController extends Controller
                 }
                 return $detalles;
             })
-            ->rawColumns(['equipo', 'precios', 'estado', 'detalles'])
+            ->addColumn('action', function($row){
+                $actions = '
+                    <div class="no-sort no-click bread-actions text-right">
+                        <a href="#" data-toggle="modal" data-target="#modalequipo" onclick="edit('.$row->id.', '.$row->precio_compra.', '.$row->precio_venta_contado.', '.$row->precio_venta.')" title="Editar" class="btn btn-sm btn-info edit">
+                            <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
+                        </a>
+                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/productos/".$row->id)."'".')">
+                            <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
+                        </a>
+                    </div>
+                        ';
+                return $row->estado == 'disponible' ? $actions : '';
+            })
+            ->rawColumns(['equipo', 'precios', 'estado', 'detalles', 'action'])
             ->make(true);
     }
 
@@ -250,7 +263,19 @@ class ProductosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            Producto::where('id', $id)->update([
+                'precio_compra' => $request->precio_compra,
+                'precio_venta' => $request->precio_venta,
+                'precio_venta_contado' => $request->precio_venta_contado
+            ]);
+            DB::commit();
+            return redirect()->route('productos.index')->with(['message' => 'Producto actualizado exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->route('ventas.index')->with(['message' => 'Ocurrio un error al actualizar la venta.', 'alert-type' => 'error']);
+        }
     }
 
     /**
@@ -261,6 +286,17 @@ class ProductosController extends Controller
      */
     public function destroy($id)
     {
-        //
+        DB::beginTransaction();
+        try {
+            Producto::where('id', $id)->update([
+                'estado' => 'eliminado',
+                'deleted_at' => Carbon::now()
+            ]);
+            DB::commit();
+            return redirect()->route('productos.index')->with(['message' => 'Producto eliminado exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->route('ventas.index')->with(['message' => 'Ocurrio un error al eliminar el producto.', 'alert-type' => 'error']);
+        }
     }
 }
