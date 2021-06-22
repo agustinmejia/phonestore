@@ -70,7 +70,7 @@ class ProductosController extends Controller
                 $clase = 'secondary';
                 switch ($row->estado) {
                     case 'crédito':
-                        $clase = 'danger';
+                        $clase = 'info';
                         break;
                     case 'disponible':
                         $clase = 'success';
@@ -111,17 +111,19 @@ class ProductosController extends Controller
                 return $detalles;
             })
             ->addColumn('action', function($row){
+                $edit = '';
+                $delete = ' ';
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
-                        <a href="#" data-toggle="modal" data-target="#modalequipo" onclick="edit('.$row->id.', '.$row->precio_compra.', '.$row->precio_venta_contado.', '.$row->precio_venta.')" title="Editar" class="btn btn-sm btn-info edit">
+                        <button '.($row->estado == 'vendido' ? 'disabled' : '').' data-toggle="modal" data-target="#modalequipo" onclick="edit('.$row->id.', '.$row->imei.', '.$row->precio_compra.', '.$row->precio_venta_contado.', '.$row->precio_venta.', '.($row->estado == 'disponible' ? true : false).')" title="Editar" class="btn btn-sm btn-info edit">
                             <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
-                        </a>
-                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/productos/".$row->id)."'".')">
+                        </button>
+                        <button '.($row->estado == 'vendido' || $row->estado == 'crédito' ? 'disabled' : '').' title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/productos/".$row->id)."'".')">
                             <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                        </a>
+                        </button>
                     </div>
                         ';
-                return $row->estado == 'disponible' ? $actions : '';
+                return $actions;
             })
             ->rawColumns(['equipo', 'precios', 'estado', 'detalles', 'action'])
             ->make(true);

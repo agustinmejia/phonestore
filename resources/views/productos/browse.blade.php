@@ -58,14 +58,18 @@
                                                     $inversion += $producto->precio_compra;
                                                 }
                                                 if($producto->venta && $producto->estado != "vendido"){
-                                                    $total += $producto->venta->precio;
                                                     foreach ($producto->venta->cuotas as $cuota) {
                                                         foreach ($cuota->pagos as $pago) {
-                                                            $pagos += $pago->monto;
+                                                            if(!$pago->deleted_at){
+                                                                $pagos += $pago->monto;
+                                                            }
                                                         }
                                                     }
-                                                    $inversion_credito += $producto->precio_compra;
-                                                    $costo += $producto->venta->precio;
+                                                    if(!$producto->venta->deleted_at){
+                                                        $total += $producto->venta->precio;
+                                                        $costo += $producto->venta->precio;
+                                                        $inversion_credito += $producto->precio_compra;
+                                                    }
                                                 }
                                             }
                                         @endphp     
@@ -104,16 +108,20 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
+                                    <label>IMEI</label>
+                                    <input type="text" name="imei" class="form-control" required />
+                                </div>
+                                <div class="form-group">
                                     <label>Precio de compra</label>
-                                    <input type="number" step="0.1" min="0.1" name="precio_compra" class="form-control" required />
+                                    <input type="number" step="0.1" min="0.1" name="precio_compra" class="form-control input-precios" required />
                                 </div>
                                 <div class="form-group">
                                     <label>Precio de venta al contado</label>
-                                    <input type="number" step="1" min="1" name="precio_venta_contado" class="form-control" required />
+                                    <input type="number" step="1" min="1" name="precio_venta_contado" class="form-control input-precios" required />
                                 </div>
                                 <div class="form-group">
                                     <label>Precio de venta al crédito</label>
-                                    <input type="number" step="1" min="1" name="precio_venta" class="form-control" required />
+                                    <input type="number" step="1" min="1" name="precio_venta" class="form-control input-precios" required />
                                 </div>
                             </div>
                         </div>
@@ -176,13 +184,21 @@
             });
         });
 
-        function edit(id, precio_compra, precio_venta_contado, precio_venta_credito){
+        function edit(id, imei, precio_compra, precio_venta_contado, precio_venta_credito, editar_precios){
             let url = "{{ url('admin/productos') }}/"+id;
             $('#form').attr('action', url);
             $('#form input[name="id"]').val(id);
+            $('#form input[name="imei"]').val(imei);
             $('#form input[name="precio_compra"]').val(precio_compra);
             $('#form input[name="precio_venta_contado"]').val(precio_venta_contado);
             $('#form input[name="precio_venta"]').val(precio_venta_credito);
+
+            // Anular editar precios si el equipo no está disponible
+            if(editar_precios){
+                $('.input-precios').removeAttr('readonly');
+            }else{
+                $('.input-precios').attr('readonly', 'readonly');
+            }
         }
     </script>
 @stop

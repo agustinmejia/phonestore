@@ -8,6 +8,7 @@
                 <th>Subtotal</th>
                 <th>IVA</th>
                 <th>Descuento</th>
+                <th>Pagos realizados</th>
                 <th>Total</th>
             </tr>
         </thead>
@@ -27,6 +28,17 @@
                     <td>{{ $venta->detalles->sum('precio') }}</td>
                     <td>{{ $venta->iva }}</td>
                     <td>{{ $venta->descuento }}</td>
+                    <td>
+                        @php
+                            $pagos = 0;
+                            foreach($venta->detalles as $detalle){
+                                foreach($detalle->cuotas as $cuota){
+                                    $pagos += $cuota->pagos->where('deleted_at', NULL)->sum('monto');
+                                }
+                            }
+                        @endphp
+                        {{ $pagos }}
+                    </td>
                     <td>{{ $venta->detalles->sum('precio') - $venta->descuento + $venta->iva }}</td>
                 </tr>
                 @php

@@ -99,15 +99,26 @@ class VentasController extends Controller
                 return ($total-$pagos).($proximo_pago ? '<br><b style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</b>' : '');
             })
             ->addColumn('action', function($row){
-                $btn_mas = "<li><a href='#' data-toggle='modal' data-target='#etapa_modal' onclick='changeStatus(".(json_encode($row)).")'>Etapa</a></li>";
+                $total = 0;
+                $pagos = 0;
+                foreach ($row->detalles as $item) {
+                    $total += $item->precio;
+                    foreach ($item->cuotas as $cuota) {
+                        foreach ($cuota->pagos as $pago) {
+                            $pagos += $pago->monto;
+                        }
+                    }
+                }
+                $deuda = $total - $pagos;
+
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
                         <a href="'.route('ventas.show', ['venta' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
-                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/ventas/".$row->id)."'".')">
-                            <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                        </a>
+                        <button title="Borrar" class="btn btn-sm btn-danger delete" '.($deuda <= 0 ? 'disabled' : '').' data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/ventas/".$row->id)."'".')">
+                            <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
+                        </button>
                     </div>
                         ';
                 return $actions;
@@ -286,7 +297,43 @@ class VentasController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // dd($request);
+        DB::beginTransaction();
+        try {
+            Venta::where('id', $id)->update([
+                'deleted_at' => Carbon::now()
+            ]);
+
+            // Eliminar del detalle de venta
+            foreach (VentasDetalle::where('venta_id', $id)->get() as $detalle) {
+                VentasDetalle::where('id', $detalle->id)->update([
+                    'deleted_at' => Carbon::now()
+                ]);
+
+                // Restaurar producto
+                Producto::where('id', $detalle->producto_id)->update([
+                    'estado' => 'disponible'
+                ]);
+
+                // Eliminar las cuotas
+                foreach (VentasDetallesCuota::where('ventas_detalle_id', $detalle->id)->get() as $cuota) {
+                    VentasDetallesCuota::where('id', $cuota->id)->update([
+                        'deleted_at' => Carbon::now()
+                    ]);
+
+                    // Eliminar los pagos de las cuotas
+                    VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $cuota->id)->update([
+                        'deleted_at' => Carbon::now()
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('ventas.index')->with(['message' => 'Venta anulada exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->route('ventas.index')->with(['message' => 'Ocurrio un error al anular la venta.', 'alert-type' => 'error']);
+        }
     }
 
     public function pago_store(Request $request){

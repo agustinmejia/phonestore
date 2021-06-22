@@ -80,7 +80,9 @@ class ComprasController extends Controller
             ->addColumn('total', function($row){
                 $total = 0;
                 foreach ($row->producto as $item) {
-                    $total += $item->precio_compra;
+                    if ($item->estado != 'eliminado') {
+                        $total += $item->precio_compra;
+                    }
                 }
                 return $total;
             })
@@ -90,9 +92,6 @@ class ComprasController extends Controller
                     <div class="no-sort no-click bread-actions text-right">
                         <a href="'.route('compras.show', ['compra' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
-                        </a>
-                        <a title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/compras/".$row->id)."'".')">
-                            <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
                         </a>
                     </div>
                         ';
@@ -158,7 +157,9 @@ class ComprasController extends Controller
      */
     public function show($id)
     {
-        //
+        $reg = Compra::with(['producto.tipo.marca', 'proveedor', 'empleado'])->where('id', $id)->where('deleted_at', NULL)->first();
+        // dd($reg);
+        return view('compras.read', compact('reg'));
     }
 
     /**

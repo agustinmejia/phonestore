@@ -33,7 +33,7 @@ class ReportesController extends Controller
                 $fecha = date('Y-m-d', strtotime($fecha.' + 1 month'));
                 break;
         }
-        $data = VentasDetallesCuota::with(['detalle.venta.cliente', 'detalle.venta.garantes.persona'])->where('deleted_at', NULL)
+        $data = VentasDetallesCuota::with(['detalle.venta.cliente', 'detalle.venta.garantes.persona'])
                     ->where('deleted_at', NULL)->where('estado', 'pendiente')
                     ->where('fecha', '<=', date('Y-m-d', strtotime($fecha)))->get();
         // return $data;
@@ -73,7 +73,9 @@ class ReportesController extends Controller
     }
 
     public function ventas_lista(Request $request){
-        $ventas = Venta::with(['cliente', 'garantes', 'detalles.producto.tipo.marca'])->where('fecha', '>=', $request->inicio)->where('fecha', '<=', $request->fin)->get();
+        $ventas = Venta::with(['cliente', 'garantes', 'detalles.producto.tipo.marca', 'detalles.cuotas.pagos'])
+                    ->where('deleted_at', NULL)->where('fecha', '>=', $request->inicio)
+                    ->where('fecha', '<=', $request->fin)->get();
         return view('reportes.ventas-lista', compact('ventas'));
     }
 }
