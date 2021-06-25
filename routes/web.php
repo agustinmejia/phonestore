@@ -49,6 +49,13 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('reportes/ventas', [ReportesController::class, 'index_ventas'])->name('index.ventas');
     Route::post('reportes/ventas/lista', [ReportesController::class, 'ventas_lista'])->name('ventas.lista');
 
-    // Reportes
+    // Cliente
     Route::post('cliente/store', [PersonasController::class, 'store'])->name('cliente.store');
+    Route::get('personas/{id}', [PersonasController::class, 'show'])->name('voyager.personas.show');
+
+    // Clear cache
+    Route::get('/admin/clear-cache', function() {
+        Artisan::call('optimize:clear');
+        return redirect('/admin/profile')->with(['message' => 'Cache eliminada.', 'alert-type' => 'success']);
+    })->name('clear.cache');
 });

@@ -82,7 +82,7 @@
                                                             if ($item->estado != 'eliminado') {
                                                                 $total += $item->precio_compra;
                                                             }
-                                                            $img = asset('images/phone-default.jpg');
+                                                            $img = asset('images/default.jpg');
                                                             $imagenes = [];
                                                             if ($item->tipo->imagenes) {
                                                                 $imagenes = json_decode($item->tipo->imagenes);
@@ -95,7 +95,7 @@
                                                                 <td>
                                                                     <b>{{ $item->tipo->nombre }}</b><br>
                                                                     <small>{{ $item->tipo->marca->nombre }}</small><br>
-                                                                    <small>IMEI {{ $item->imei }}</small>
+                                                                    <small>IMEI/N&deg; de serie {{ $item->imei }}</small>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -151,7 +151,6 @@
 @section('javascript')
     <script>
         $(document).ready(function () {
-            moment.locale('es');
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>

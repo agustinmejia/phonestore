@@ -1,13 +1,13 @@
 @extends('voyager::master')
 
-@section('page_title', 'Viendo Equipos')
+@section('page_title', 'Viendo Productos')
 
 @section('page_header')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-9">
                 <h1 class="page-title">
-                    <i class="voyager-phone"></i> Equipos
+                    <i class="voyager-credit-cards"></i> Productos
                 </h1>
             </div>
             <div class="col-md-3">
@@ -38,9 +38,9 @@
                                 <table class="table">
                                     <thead>
                                         <tr>
-                                            <th>Stock de equipos</th>
-                                            <th>Equipos a crédito</th>
-                                            <th>Inversión total <span data-toggle="tooltip" data-placement="top" title="Incluye tanto los equipos en stock como los equipos que están a crédito"><span class="voyager-question"></span></span></th>
+                                            <th>Stock de productos</th>
+                                            <th>Productos a crédito</th>
+                                            <th>Inversión total <span data-toggle="tooltip" data-placement="top" title="Incluye tanto los productos en stock como los productos que están a crédito"><span class="voyager-question"></span></span></th>
                                             <th>Pagos realizados</th>
                                             <th>Deuda total</th>
                                             <th>Ganancia esperada <span data-toggle="tooltip" data-placement="top" title="No toma en cuenta los productos existentes en stock"><span class="voyager-question"></span></span> </th>
@@ -83,7 +83,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
-                                <small>En el cuadro superior no se toman en cuenta los equipos vendidos al contado ni los que ya fueron cancelados en su totalidad.</small>
+                                <small>En el cuadro superior no se toman en cuenta los productos vendidos al contado ni los que ya fueron cancelados en su totalidad.</small>
                             </div>
                         </div>
                     </div>
@@ -108,7 +108,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <label>IMEI</label>
+                                    <label>IMEI/N&deg; de serie</label>
                                     <input type="text" name="imei" class="form-control" required />
                                 </div>
                                 <div class="form-group">

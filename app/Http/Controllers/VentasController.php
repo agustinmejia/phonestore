@@ -13,6 +13,7 @@ use App\Models\TiposProducto;
 use App\Models\Persona;
 use App\Models\Producto;
 use App\Models\Marca;
+use App\Models\Categoria;
 use App\Models\Venta;
 use App\Models\VentasDetalle;
 use App\Models\VentasDetallesCuota;
@@ -67,7 +68,7 @@ class VentasController extends Controller
             ->addColumn('detalles', function($row){
                 $detalles = '';
                 foreach ($row->detalles as $item) {
-                    $detalles .= '<li>'.$item->producto->tipo->marca->nombre.' <b>'.$item->producto->tipo->nombre.'</b> <br> <small>IMEI '.$item->producto->imei.'</small></li>';
+                    $detalles .= '<li>'.$item->producto->tipo->marca->nombre.' <b>'.$item->producto->tipo->nombre.'</b> <br> <small>IMEI/N&deg; de serie '.$item->producto->imei.'</small></li>';
                 }
                 return '
                     <div class="col-md-12">
@@ -136,12 +137,21 @@ class VentasController extends Controller
     {
         $type = 'add';
         // $productos = Producto::with(['tipo.marca'])->where('deleted_at', NULL)->where('estado', 'disponible')->orderBy('precio_venta', 'ASC')->get();
-        $productos = Marca::with(['tipos.productos.tipo.marca', 'tipos.productos' => function($q){
-            $q->where('estado', 'disponible');
-        }])->get();
-        // dd($productos);
+        $categorias = Categoria::where('deleted_at', NULL)->select('id', 'nombre', 'deleted_at as marcas')->get();
+        $cont = 0;
+        foreach($categorias as $categoria){
+            $marcas = Marca::with(['tipos.productos.tipo.marca',
+            'tipos.productos' => function($q){
+                $q->where('estado', 'disponible');
+            }, 'tipos' => function($q) use($categoria){
+                $q->where('categoria_id', $categoria->id);
+            }])->get();
+            $categorias[$cont]->marcas = $marcas;
+            $cont++;
+        }
+        // dd($categorias);
         $personas = Persona::where('deleted_at', NULL)->orderBy('nombre_completo', 'ASC')->get();
-        return view('ventas.add-edit', compact('type', 'productos', 'personas'));
+        return view('ventas.add-edit', compact('type', 'categorias', 'personas'));
     }
 
     /**

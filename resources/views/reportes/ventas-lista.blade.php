@@ -22,7 +22,7 @@
                     <td>{{ $venta->cliente->nombre_completo }}</td>
                     <td>
                         @foreach ($venta->detalles as $detalle)
-                            {{ $detalle->producto->tipo->marca->nombre }} <b>{{ $detalle->producto->tipo->nombre }}</b> <small>IMEI {{ $detalle->producto->imei }}</small> <br>
+                            {{ $detalle->producto->tipo->marca->nombre }} <b>{{ $detalle->producto->tipo->nombre }}</b> <small>IMEI/N&deg; de serie {{ $detalle->producto->imei }}</small> <br>
                         @endforeach
                     </td>
                     <td>{{ $venta->detalles->sum('precio') }}</td>

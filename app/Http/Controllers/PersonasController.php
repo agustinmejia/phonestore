@@ -14,6 +14,11 @@ use App\Models\Persona;
 
 class PersonasController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -56,7 +61,7 @@ class PersonasController extends Controller
             DB::commit();
 
             if ($request->ajax) {
-                return response()->json(['persona' => $persona]);
+                return response()->json(['persona' => $persona, 'type' => $request->type]);
             }
 
             return redirect()->route('personas.index')->with(['message' => 'Persona guardada exitosamente.', 'alert-type' => 'success']);
@@ -75,7 +80,11 @@ class PersonasController extends Controller
      */
     public function show($id)
     {
-        //
+        $reg = Persona::with(['ventas.detalles.producto.tipo', 'ventas.detalles.cuotas.pagos', 'garante.venta.detalles.producto.tipo.marca', 'garante.venta.cliente', 'ventas' => function($q){
+            $q->where('deleted_at', NULL)->orderBy('id', 'DESC');
+        }])->where('id', $id)->first();
+        // dd($reg);
+        return view('clientes.read', compact('reg'));
     }
 
     /**

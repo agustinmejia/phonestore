@@ -33,6 +33,7 @@ class PermissionsTableSeeder extends Seeder
         Permission::generateFor('settings');
 
         Permission::generateFor('marcas');
+        Permission::generateFor('categorias');
         Permission::generateFor('tipos_productos');
         Permission::generateFor('personas');
         Permission::generateFor('proveedores');

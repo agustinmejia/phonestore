@@ -13,6 +13,7 @@ use App\Models\TiposProducto;
 use App\Models\Proveedore;
 use App\Models\Producto;
 use App\Models\Compra;
+use App\Models\Categoria;
 
 class ComprasController extends Controller
 {
@@ -70,7 +71,7 @@ class ComprasController extends Controller
                             $clase = 'danger';
                             break;
                     }
-                    $detalles .= '<li style="padding: 2px">'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b> <label class="label label-'.$clase.'">'.$item->estado.'</label> <br> <small>IMEI '.$item->imei.'</small> </li>';
+                    $detalles .= '<li style="padding: 2px">'.$item->tipo->marca->nombre.' <b>'.$item->tipo->nombre.'</b> <label class="label label-'.$clase.'">'.$item->estado.'</label> <br> <small>IMEI/N&deg; de serie '.$item->imei.'</small> </li>';
                 }
                 return '
                     <div class="col-md-12">
@@ -109,9 +110,9 @@ class ComprasController extends Controller
     public function create()
     {
         $type = 'add';
-        $productos_tipo = TiposProducto::with(['marca'])->where('deleted_at', NULL)->get();
+        $categorias = Categoria::with(['tipos.marca'])->where('deleted_at', NULL)->get();
         $proveedores = Proveedore::all()->where('deleted_at', NULL);
-        return view('compras.add-edit', compact('type', 'productos_tipo', 'proveedores'));
+        return view('compras.add-edit', compact('type', 'categorias', 'proveedores'));
     }
 
     /**

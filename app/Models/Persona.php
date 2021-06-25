@@ -12,6 +12,14 @@ class Persona extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = [
-        'nombre_completo', 'ci', 'telefono', 'direccion', 'trabajo', 'foto', 'archivos'
+        'nombre_completo', 'ci', 'telefono', 'direccion', 'trabajo', 'foto', 'archivos', 'observaciones'
     ];
+
+    function ventas(){
+        return $this->hasMany(Venta::class);
+    }
+
+    function garante(){
+        return $this->hasMany(VentasGarante::class);
+    }
 }

@@ -54,8 +54,14 @@
                                             <label>Productos</label>
                                             <select id="select-productos_tipo_id" class="form-control select2">
                                                 <option disabled selected value="">-- Seleccionar productos --</option>
-                                                @foreach ($productos_tipo as $item)
-                                                    <option data-item='@json($item)'>{{ $item->marca->nombre }} {{ $item->nombre }}</option>
+                                                @foreach ($categorias as $categoria)
+                                                    @if (count($categoria->tipos) > 0)
+                                                        <optgroup label="{{ $categoria->nombre }}">
+                                                            @foreach ($categoria->tipos as $item)
+                                                                <option data-item='@json($item)'>{{ $item->marca->nombre }} {{ $item->nombre }}</option>
+                                                            @endforeach
+                                                        </optgroup>
+                                                    @endif
                                                 @endforeach
                                             </select>
                                         </div>
@@ -66,7 +72,7 @@
                                             <table class="table" style="display: none" id="table-list">
                                                 <thead>
                                                     <th>Tipo</th>
-                                                    <th>IMEI</th>
+                                                    <th>IMEI/N&deg; de serie</th>
                                                     <th style="width: 100px">Precio compra</th>
                                                     <th style="width: 100px">Precio venta <br> contado </th>
                                                     <th style="width: 100px">Precio venta <br> crédito</th>

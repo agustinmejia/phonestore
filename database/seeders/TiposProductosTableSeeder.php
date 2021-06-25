@@ -23,6 +23,7 @@ class TiposProductosTableSeeder extends Seeder
             array (
                 'id' => 1,
                 'marca_id' => 1,
+                'categoria_id' => 1,
                 'nombre' => 'A10',
                 'slug' => 'a10',
                 'imagenes' => '["tipos-productos\\/May2021\\/wzufgod1ukvsNrZ2G7no.jpg"]',
@@ -35,6 +36,7 @@ class TiposProductosTableSeeder extends Seeder
             array (
                 'id' => 2,
                 'marca_id' => 1,
+                'categoria_id' => 1,
                 'nombre' => 'A70',
                 'slug' => 'a70',
                 'imagenes' => '["tipos-productos\\/May2021\\/1t7T4k3WPVV7ARPzzhmb.jpg"]',
@@ -48,6 +50,7 @@ class TiposProductosTableSeeder extends Seeder
                 'id' => 3,
                 'marca_id' => 1,
                 'nombre' => 'A50',
+                'categoria_id' => 1,
                 'slug' => 'a50',
                 'imagenes' => '["tipos-productos\\/May2021\\/yQzUMGbtJfVkReOgH0I8.jpg"]',
                 'detalles' => NULL,
@@ -59,6 +62,7 @@ class TiposProductosTableSeeder extends Seeder
             array (
                 'id' => 4,
                 'marca_id' => 2,
+                'categoria_id' => 1,
                 'nombre' => 'Y5',
                 'slug' => 'y5',
                 'imagenes' => '["tipos-productos\\/May2021\\/7ObMll5AFytbyYSH8Zuu.jpg"]',

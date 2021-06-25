@@ -18,7 +18,7 @@ class Compra extends Model
     }
 
     function proveedor(){
-        return $this->belongsTo(Proveedore::class, 'proveedor_id');
+        return $this->belongsTo(Proveedore::class, 'proveedor_id')->withTrashed();
     }
 
     function empleado(){

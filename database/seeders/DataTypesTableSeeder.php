@@ -89,7 +89,7 @@ class DataTypesTableSeeder extends Seeder
                 'server_side' => 0,
                 'details' => '{"order_column":"nombre","order_display_column":"nombre","order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2021-05-19 08:49:29',
-                'updated_at' => '2021-05-19 08:59:36',
+                'updated_at' => '2021-06-25 14:26:13',
             ),
             4 => 
             array (
@@ -123,9 +123,9 @@ class DataTypesTableSeeder extends Seeder
                 'description' => NULL,
                 'generate_permissions' => 1,
                 'server_side' => 0,
-                'details' => '{"order_column":"nombre_completo","order_display_column":"nombre_completo","order_direction":"asc","default_search_key":null}',
+                'details' => '{"order_column":"nombre_completo","order_display_column":"nombre_completo","order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2021-05-19 09:06:44',
-                'updated_at' => '2021-05-19 09:06:44',
+                'updated_at' => '2021-06-25 14:02:46',
             ),
             6 => 
             array (
@@ -162,6 +162,24 @@ class DataTypesTableSeeder extends Seeder
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
                 'created_at' => '2021-06-22 11:55:42',
                 'updated_at' => '2021-06-22 11:59:18',
+            ),
+            8 => 
+            array (
+                'id' => 11,
+                'name' => 'categorias',
+                'slug' => 'categorias',
+                'display_name_singular' => 'Categoría',
+                'display_name_plural' => 'Categorías',
+                'icon' => 'voyager-tag',
+                'model_name' => 'App\\Models\\Categoria',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}',
+                'created_at' => '2021-06-25 14:28:35',
+                'updated_at' => '2021-06-25 14:28:35',
             ),
         ));
         

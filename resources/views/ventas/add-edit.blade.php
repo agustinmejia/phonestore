@@ -50,58 +50,87 @@
                             <div class="row">
                                 <div class="col-md-8">
                                     <div class="col-md-12" style="min-height: 430px; max-height: 430px; overflow-y: auto; border: 1px solid #d8d8d8; padding: 0px">
-                                        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                                            @foreach ($productos as $marca)
-                                                <div class="panel panel-default" style="margin: 0px">
-                                                    <div class="panel-heading" role="tab" id="headingOne">
-                                                        <h4 class="panel-title">
-                                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ $marca->id }}" aria-expanded="true" aria-controls="collapse-{{ $marca->id }}">
-                                                            {{ $marca->nombre }}
+                                        <div class="tab-content">
+                                            <ul class="nav nav-tabs" role="tablist">
+                                                @php
+                                                    $clase = 'active';
+                                                @endphp
+                                                @foreach ($categorias as $item)
+                                                    <li class="nav-item {{ $clase }}">
+                                                        <a href="#tab-{{ $item->id }}" role="tab" data-toggle="tab">
+                                                            {{ $item->nombre }}
                                                         </a>
-                                                        </h4>
-                                                    </div>
-                                                    <div id="collapse-{{ $marca->id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                                                        <div class="panel-body">
-                                                            @foreach ($marca->tipos as $tipo)
-                                                                @if (count($tipo->productos) > 0)
-                                                                <div class="row">
-                                                                    <div class="col-md-12">
-                                                                        <ol class="breadcrumb">
-                                                                            <li><a href="#">{{ $marca->nombre }}</a></li>
-                                                                            <li class="active">{{ $tipo->nombre }}</li>
-                                                                        </ol>
+                                                    </li>
+                                                    @php
+                                                        $clase = '';
+                                                    @endphp
+                                                @endforeach
+                                            </ul>
+                                            @php
+                                                $clase = 'active in';
+                                            @endphp
+                                            @foreach ($categorias as $item)
+                                                <div class="tab-pane fade {{ $clase }}" id="tab-{{ $item->id }}">
+                                                    <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                                        @foreach ($item->marcas as $marca)
+                                                            @if (count($marca->tipos) > 0)
+                                                                <div class="panel panel-default" style="margin: 0px">
+                                                                    <div class="panel-heading" role="tab" id="headingOne">
+                                                                        <h4 class="panel-title">
+                                                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ $item->id }}-{{ $marca->id }}" aria-expanded="true" aria-controls="collapse-{{ $marca->id }}">
+                                                                            {{ $marca->nombre }}
+                                                                        </a>
+                                                                        </h4>
                                                                     </div>
-                                                                    <div class="col-md-12" style="margin: 0px">
-                                                                        @foreach ($tipo->productos as $item)
-                                                                            @php
-                                                                                $img = asset('images/phone-default.jpg');
-                                                                                $imagenes = [];
-                                                                                if ($item->tipo->imagenes) {
-                                                                                    $imagenes = json_decode($item->tipo->imagenes);
-                                                                                    $img = asset('storage/'.str_replace(".", "-cropped.", $imagenes[0]));
-                                                                                }
-                                                                            @endphp
-                                                                            <div class="card col-md-2 card-phone" style="padding: 5px" data-item='@json($item)'>
-                                                                                <div style="position: absolute; top: 3px; right: 3px">
-                                                                                    <label class="label label-primary">{{ $item->precio_venta }}</label>
+                                                                    <div id="collapse-{{ $item->id }}-{{ $marca->id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                                                                        <div class="panel-body">
+                                                                            @foreach ($marca->tipos as $tipo)
+                                                                                @if (count($tipo->productos) > 0)
+                                                                                <div class="row">
+                                                                                    <div class="col-md-12">
+                                                                                        <ol class="breadcrumb">
+                                                                                            <li><a href="#">{{ $marca->nombre }}</a></li>
+                                                                                            <li class="active">{{ $tipo->nombre }}</li>
+                                                                                        </ol>
+                                                                                    </div>
+                                                                                    <div class="col-md-12" style="margin: 0px">
+                                                                                        @foreach ($tipo->productos as $item)
+                                                                                            @php
+                                                                                                $img = asset('images/default.jpg');
+                                                                                                $imagenes = [];
+                                                                                                if ($item->tipo->imagenes) {
+                                                                                                    $imagenes = json_decode($item->tipo->imagenes);
+                                                                                                    $img = asset('storage/'.str_replace(".", "-cropped.", $imagenes[0]));
+                                                                                                }
+                                                                                            @endphp
+                                                                                            <div class="card col-md-2 card-phone" style="padding: 5px" data-item='@json($item)'>
+                                                                                                <div style="position: absolute; top: 3px; right: 3px">
+                                                                                                    <label class="label label-primary">{{ $item->precio_venta }}</label>
+                                                                                                </div>
+                                                                                                <img src="{{ $img }}" class="card-img-top" width="100%" alt="phone">
+                                                                                                <div class="card-body" style="padding: 5px">
+                                                                                                    <b style="white-space: nowrap">{{ $item->tipo->nombre }}</b> <br>
+                                                                                                    <small style="font-size: 10px white-space: nowrap">{{ $item->tipo->marca->nombre }}</small>
+                                                                                                </div>
+                                                                                                <div id="label-imei-{{ $item->id }}" style="position: absolute; bottom: 3px; left: 0px; right: 0px; background-color: rgba(0,0,0,0.8); display: none">
+                                                                                                    <p class="text-center" style="color: white; margin: 5px; font-size: 11px"><small style="font-size: 9px">IMEI/N&deg; de serie</small> <br> {{ $item->imei }} </p>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        @endforeach
+                                                                                    </div>
                                                                                 </div>
-                                                                                <img src="{{ $img }}" class="card-img-top" width="100%" alt="phone">
-                                                                                <div class="card-body" style="padding: 5px">
-                                                                                    <b style="white-space: nowrap">{{ $item->tipo->nombre }}</b> <br>
-                                                                                    <small style="font-size: 10px white-space: nowrap">{{ $item->tipo->marca->nombre }}</small>
-                                                                                </div>
-                                                                                <div id="label-imei-{{ $item->id }}" style="position: absolute; bottom: 3px; left: 0px; right: 0px; background-color: rgba(0,0,0,0.8); display: none">
-                                                                                    <p class="text-center" style="color: white; margin: 5px; font-size: 11px"><small style="font-size: 9px">IMEI</small> <br> {{ $item->imei }} </p>
-                                                                                </div>
-                                                                            </div>
-                                                                        @endforeach
+                                                                                @endif
+                                                                            @endforeach
+                                                                        </div>
                                                                     </div>
                                                                 </div>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
+                                                            @endif
+                                                        @endforeach
                                                     </div>
                                                 </div>
+                                                @php
+                                                    $clase = '';
+                                                @endphp
                                             @endforeach
                                         </div>
                                     </div>
@@ -117,7 +146,7 @@
                                                 @endforeach
                                             </select>
                                             <div class="input-group-btn">
-                                                <a href="#" data-toggle="modal" data-target="#modalCliente" class="btn btn-primary" style="margin: 0px">Nuevo</a>
+                                                <a href="#" data-toggle="modal" data-target="#modalPersona" class="btn btn-primary btn-crear-persona" data-type="Cliente" style="margin: 0px">Nuevo</a>
                                             </div>
                                         </div>
                                         @if ($errors->has('cliente_id'))
@@ -128,12 +157,17 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Garante(s)</label>
-                                        <select name="garante_id[]" id="select-garante_id" multiple class="form-control" required>
-                                            {{-- <option disabled selected value="">-- Seleccionar o registrar garante --</option> --}}
-                                            @foreach ($personas as $item)
-                                                <option value="{{ $item->id }}">{{ $item->nombre_completo }} - {{ $item->ci ?? 'NN' }}</option>
-                                            @endforeach
-                                        </select>
+                                        <div class="input-group">
+                                            <select name="garante_id[]" id="select-garante_id" multiple class="form-control" required>
+                                                {{-- <option disabled selected value="">-- Seleccionar o registrar garante --</option> --}}
+                                                @foreach ($personas as $item)
+                                                    <option value="{{ $item->id }}">{{ $item->nombre_completo }} - {{ $item->ci ?? 'NN' }}</option>
+                                                @endforeach
+                                            </select>
+                                            <div class="input-group-btn">
+                                                <a href="#" data-toggle="modal" data-target="#modalPersona" class="btn btn-primary btn-crear-persona" data-type="Garante" style="margin: 0px">Nuevo</a>
+                                            </div>
+                                        </div>
                                         @if ($errors->has('garante_id'))
                                             @foreach ($errors->get('garante_id') as $error)
                                                 <span class="help-block text-danger">{{ $error }}</span>
@@ -220,12 +254,13 @@
     <form id="form" action="{{ route('cliente.store') }}" method="post">
         @csrf
         <input type="hidden" name="ajax" value="1">
-        <div class="modal fade" id="modalCliente" tabindex="-1" role="dialog" aria-labelledby="modalClienteLabel">
+        <input type="hidden" name="type">
+        <div class="modal fade" id="modalPersona" tabindex="-1" role="dialog" aria-labelledby="modalPersonaLabel">
             <div class="modal-dialog modal-primary" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalClienteLabel"><span class="voyager-edit"></span> Nuevo cliente</h4>
+                        <h4 class="modal-title" id="modalPersonaLabel"></h4>
                     </div>
                     <div class="modal-body">
                         <div class="row">
@@ -241,7 +276,7 @@
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label>Cédula de identidad</label>
-                                        <input type="text" name="ci" class="form-control" required />
+                                        <input type="text" name="ci" class="form-control" />
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label>Telefono/celular</label>
@@ -313,25 +348,36 @@
                 total();
             });
 
+            $('.btn-crear-persona').click(function(){
+                let type = $(this).data('type');
+                $('#form input[name="type"]').val(type);
+                $('#modalPersonaLabel').html(`<span class="voyager-edit"></span> Nuevo ${type}`);
+            });
+
             $('#form').submit(function(e){
                 e.preventDefault();
                 $('#btn-guardar').html('Guardando...');
                 $('#btn-guardar').attr('disabled', 'disabled');
                 $.post($(this).attr('action'), $(this).serialize(), function(res){
-                    var newOption = new Option(`${res.persona.nombre_completo} - ${res.persona.ci}`, res.persona.id, false, false);
-                    $('#select-cliente_id').append(newOption).trigger('change');
-                    $('#select-cliente_id').val(res.persona.id).trigger('change');
-                    toastr.success('Cliente registrado correctamente', 'Bien hecho!');
+                    var newOption = new Option(`${res.persona.nombre_completo} - ${res.persona.ci ? res.persona.ci : 'NN'}`, res.persona.id, false, false);
+                    if (res.type == 'Cliente') {
+                        $('#select-cliente_id').append(newOption).trigger('change');
+                        $('#select-cliente_id').val(res.persona.id).trigger('change');
+                    }else{
+                        $('#select-garante_id').append(newOption).trigger('change');
+                        $('#select-garante_id').val(res.persona.id).trigger('change');
+                    }
+                    toastr.success(`${res.type} registrado correctamente`, 'Bien hecho!');
                     $('#btn-guardar').html('Guardar');
                     $('#btn-guardar').removeAttr('disabled');
-                    $('#modalCliente').modal('hide');
+                    $('#modalPersona').modal('hide');
                     $('#form').trigger("reset");
                 });
             });
 
         });
         function addTr(data){
-            img = "{{ asset('images/phone-default.jpg') }}";
+            img = "{{ asset('images/default.jpg') }}";
             imagenes = [];
             if (data.tipo.imagenes) {
                 imagenes = JSON.parse(data.tipo.imagenes);

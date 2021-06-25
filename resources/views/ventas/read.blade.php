@@ -92,7 +92,7 @@
                                                 <tr>
                                                     <td>
                                                         @php
-                                                            $img = asset('images/phone-default.jpg');
+                                                            $img = asset('images/default.jpg');
                                                             $imagenes = [];
                                                             if ($item->producto->tipo->imagenes) {
                                                                 $imagenes = json_decode($item->producto->tipo->imagenes);
@@ -111,7 +111,7 @@
                                                                 <td>
                                                                     <b>{{ $item->producto->tipo->nombre }}</b><br>
                                                                     <small>{{ $item->producto->tipo->marca->nombre }}</small><br>
-                                                                    <small>IMEI {{ $item->producto->imei }}</small>
+                                                                    <small>IMEI/N&deg; de serie {{ $item->producto->imei }}</small>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -141,7 +141,7 @@
     {{-- Detalle de cuotas --}}
     <form action="{{ route('ventas.pago.store') }}" method="post">
         <div class="modal modal-success fade" tabindex="-1" id="detalle_modal" role="dialog">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
@@ -170,6 +170,7 @@
                                                     <th>Monto</th>
                                                     <th>Deuda</th>
                                                     <th>Estado</th>
+                                                    <th>Pagos</th>
                                                 </tr>
                                             </thead>
                                             <tbody id="table-detalle"></tbody>
@@ -241,6 +242,12 @@
                         totalPago += parseFloat(pago.monto)
                     });
                     let fecha = new Date(item.fecha);
+
+                    let pagos = '';
+                    item.pagos.map(pago => {
+                        pagos += `<p>${moment(pago.created_at).format('D/MMMM/YYYY')} ${pago.monto} Bs. <br> <small>${pago.observaciones}</small></p>`;
+                    });
+
                     detalle += `
                         <tr>
                             <td><input type="checkbox" ${item.estado == 'pagada' ? 'disabled' : ''} name="cuotas[]" class="checkbox-cuotas" onclick="total()" value="${item.id}" data-monto="${item.monto - totalPago}" /></td>
@@ -248,6 +255,7 @@
                             <td>${item.monto}</td>
                             <td>${item.monto - totalPago.toFixed(2)}</td>
                             <td><span class="text-${item.estado == 'pagada' ? 'success' : 'danger'}">${item.estado}</span></td>
+                            <td>${pagos}</td>
                         </tr>
                     `;
                 });

@@ -60,7 +60,7 @@
                 { data: 'tipo', title: 'Tipo' },
                 { data: 'monto', title: 'Deuda Bs.' },
                 { data: 'fecha', title: 'Fecha de pago' },
-                // { data: 'action', title: 'Acciones', orderable: false, searchable: false },
+                { data: 'action', title: 'Acciones', orderable: false, searchable: false },
             ]
             customDataTable("{{ url('admin/reportes/deudas') }}/"+rango, columns);
 

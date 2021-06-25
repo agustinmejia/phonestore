@@ -40,7 +40,7 @@ class ProductosController extends Controller
             Datatables::of($data)
             ->addIndexColumn()
             ->addColumn('equipo', function($row){
-                $img = asset('images/phone-default.jpg');
+                $img = asset('images/default.jpg');
                 $imagenes = [];
                 if ($row->tipo->imagenes) {
                     $imagenes = json_decode($row->tipo->imagenes);
@@ -52,7 +52,7 @@ class ProductosController extends Controller
                             <td><img src="'.$img.'" class="card-img-top" width="60px" alt="phone"></td>
                             <td>
                                 <b>'.$row->tipo->marca->nombre.' '.$row->tipo->nombre.'</b><br>
-                                <small>IMEI: '.$row->imei.'</small><br>
+                                <small>IMEI/N&deg; de serie: '.$row->imei.'</small><br>
                                 <small>'.substr($row->tipo->detalles, 0, 50).'...</small>
                             </td>
                         </tr>
@@ -138,7 +138,7 @@ class ProductosController extends Controller
             Datatables::of($data)
             ->addIndexColumn()
             ->addColumn('equipo', function($row){
-                $img = asset('images/phone-default.jpg');
+                $img = asset('images/default.jpg');
                 $imagenes = [];
                 if ($row->imagenes) {
                     $imagenes = json_decode($row->imagenes);

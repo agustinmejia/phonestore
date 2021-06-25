@@ -16,4 +16,8 @@ class VentasGarante extends Model
     function persona(){
         return $this->belongsTo(Persona::class, 'persona_id')->withTrashed();
     }
+
+    function venta(){
+        return $this->belongsTo(Venta::class, 'venta_id');
+    }
 }

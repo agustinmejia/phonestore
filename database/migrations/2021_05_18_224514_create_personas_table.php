@@ -21,7 +21,7 @@ class CreatePersonasTable extends Migration
             $table->string('direccion')->nullable();
             $table->string('trabajo')->nullable();
             $table->string('foto')->nullable();
-            $table->string('archivos')->nullable();
+            $table->string('observaciones')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

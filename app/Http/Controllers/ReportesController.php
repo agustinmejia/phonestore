@@ -64,7 +64,17 @@ class ReportesController extends Controller
             ->addColumn('fecha', function($row){
                 return date('d/m/Y', strtotime($row->fecha)).'<br><small>'.Carbon::parse($row->fecha)->diffForHumans().'</small>';
             })
-            ->rawColumns(['cliente', 'garante', 'equipo', 'fecha'])
+            ->addColumn('action', function($row){
+                $actions = '
+                    <div class="no-sort no-click bread-actions text-right">
+                        <a href="'.route('ventas.show', ['venta' => $row->detalle->venta_id]).'" title="Ver" class="btn btn-sm btn-warning view">
+                            <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
+                        </a>
+                    </div>
+                        ';
+                return $actions;
+            })
+            ->rawColumns(['cliente', 'garante', 'equipo', 'fecha', 'action'])
             ->make(true);
     }
 
