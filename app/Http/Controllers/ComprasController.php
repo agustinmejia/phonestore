@@ -138,6 +138,7 @@ class ComprasController extends Controller
                     'imei' => $request->imei[$i],
                     'precio_compra' => $request->precio_compra[$i],
                     'precio_venta' => $request->precio_venta[$i],
+                    'precio_venta_alt' => $request->precio_venta_alt[$i],
                     'precio_venta_contado' => $request->precio_venta_contado[$i]
                 ]);
             }

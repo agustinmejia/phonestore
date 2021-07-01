@@ -123,6 +123,10 @@
                                     <label>Precio de venta al crédito</label>
                                     <input type="number" step="1" min="1" name="precio_venta" class="form-control input-precios" required />
                                 </div>
+                                <div class="form-group">
+                                    <label>Precio de venta al crédito</label>
+                                    <input type="number" step="1" min="1" name="precio_venta_alt" class="form-control input-precios" required />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -184,7 +188,7 @@
             });
         });
 
-        function edit(id, imei, precio_compra, precio_venta_contado, precio_venta_credito, editar_precios){
+        function edit(id, imei, precio_compra, precio_venta_contado, precio_venta_credito, precio_venta_credito_alt, editar_precios){
             let url = "{{ url('admin/productos') }}/"+id;
             $('#form').attr('action', url);
             $('#form input[name="id"]').val(id);
@@ -192,6 +196,7 @@
             $('#form input[name="precio_compra"]').val(precio_compra);
             $('#form input[name="precio_venta_contado"]').val(precio_venta_contado);
             $('#form input[name="precio_venta"]').val(precio_venta_credito);
+            $('#form input[name="precio_venta_alt"]').val(precio_venta_credito_alt);
 
             // Anular editar precios si el equipo no está disponible
             if(editar_precios){

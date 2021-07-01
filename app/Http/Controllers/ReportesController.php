@@ -11,6 +11,7 @@ use Carbon\Carbon;
 // Models
 use App\Models\VentasDetallesCuota;
 use App\Models\Venta;
+use App\Models\RegistrosCaja;
 
 class ReportesController extends Controller
 {
@@ -87,5 +88,15 @@ class ReportesController extends Controller
                     ->where('deleted_at', NULL)->where('fecha', '>=', $request->inicio)
                     ->where('fecha', '<=', $request->fin)->get();
         return view('reportes.ventas-lista', compact('ventas'));
+    }
+
+    public function index_diario(){
+        return view('reportes.diario-browse');
+    }
+
+    public function diario_lista(Request $request){
+        $query_user = $request->user_id ? 'user_id = '.$request->user_id : 1;
+        $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->whereRaw($query_user)->get();
+        return view('reportes.diario-lista', compact('registros_cajas'));
     }
 }

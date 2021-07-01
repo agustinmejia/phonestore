@@ -147,24 +147,6 @@ class DataTypesTableSeeder extends Seeder
             ),
             7 => 
             array (
-                'id' => 10,
-                'name' => 'gastos',
-                'slug' => 'gastos',
-                'display_name_singular' => 'Gasto',
-                'display_name_plural' => 'Gastos',
-                'icon' => 'voyager-dollar',
-                'model_name' => 'App\\Models\\Gasto',
-                'policy_name' => NULL,
-                'controller' => NULL,
-                'description' => NULL,
-                'generate_permissions' => 1,
-                'server_side' => 0,
-                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
-                'created_at' => '2021-06-22 11:55:42',
-                'updated_at' => '2021-06-22 11:59:18',
-            ),
-            8 => 
-            array (
                 'id' => 11,
                 'name' => 'categorias',
                 'slug' => 'categorias',
@@ -180,6 +162,24 @@ class DataTypesTableSeeder extends Seeder
                 'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null}',
                 'created_at' => '2021-06-25 14:28:35',
                 'updated_at' => '2021-06-25 14:28:35',
+            ),
+            8 => 
+            array (
+                'id' => 12,
+                'name' => 'registros_cajas',
+                'slug' => 'registros-cajas',
+                'display_name_singular' => 'Registro de Caja',
+                'display_name_plural' => 'Registros de Caja',
+                'icon' => 'voyager-dollar',
+                'model_name' => 'App\\Models\\RegistrosCaja',
+                'policy_name' => NULL,
+                'controller' => NULL,
+                'description' => NULL,
+                'generate_permissions' => 1,
+                'server_side' => 0,
+                'details' => '{"order_column":null,"order_display_column":null,"order_direction":"asc","default_search_key":null,"scope":null}',
+                'created_at' => '2021-06-30 17:31:19',
+                'updated_at' => '2021-06-30 17:52:39',
             ),
         ));
         

@@ -64,6 +64,7 @@ class ProductosController extends Controller
                         <small>Precio de compra:</small> <b>Bs. '.number_format($row->precio_compra                                                                                                                                                                                                                                                                             , 0, '', '').'</b><br>
                         <small>Precio de venta al contado:</small> <b title="Ganancia Bs. '.($row->precio_venta_contado-$row->precio_compra).'" style="cursor: pointer">Bs. '.number_format($row->precio_venta_contado, 0, '', '').'</b><br>
                         <small>Precio de venta al crédito:</small> <b title="Ganancia Bs. '.($row->precio_venta-$row->precio_compra).'" style="cursor: pointer">Bs. '.number_format($row->precio_venta, 0, '', '').'</b><br>
+                        <small>Precio de venta al crédito:</small> <b title="Ganancia Bs. '.($row->precio_venta_alt-$row->precio_compra).'" style="cursor: pointer">Bs. '.number_format($row->precio_venta_alt, 0, '', '').'</b><br>
                     </div>';
             })
             ->addColumn('estado', function($row){
@@ -115,7 +116,7 @@ class ProductosController extends Controller
                 $delete = ' ';
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
-                        <button '.($row->estado == 'vendido' ? 'disabled' : '').' data-toggle="modal" data-target="#modalequipo" onclick="edit('.$row->id.', '.$row->imei.', '.$row->precio_compra.', '.$row->precio_venta_contado.', '.$row->precio_venta.', '.($row->estado == 'disponible' ? true : false).')" title="Editar" class="btn btn-sm btn-info edit">
+                        <button '.($row->estado == 'vendido' ? 'disabled' : '').' data-toggle="modal" data-target="#modalequipo" onclick="edit('.$row->id.', '.$row->imei.', '.$row->precio_compra.', '.$row->precio_venta_contado.', '.$row->precio_venta.', '.$row->precio_venta_alt.', '.($row->estado == 'disponible' ? true : false).')" title="Editar" class="btn btn-sm btn-info edit">
                             <i class="voyager-edit"></i> <span class="hidden-xs hidden-sm">Editar</span>
                         </button>
                         <button '.($row->estado == 'vendido' || $row->estado == 'crédito' ? 'disabled' : '').' title="Borrar" class="btn btn-sm btn-danger delete" data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/productos/".$row->id)."'".')">
@@ -270,6 +271,7 @@ class ProductosController extends Controller
             Producto::where('id', $id)->update([
                 'precio_compra' => $request->precio_compra,
                 'precio_venta' => $request->precio_venta,
+                'precio_venta_alt' => $request->precio_venta_alt,
                 'precio_venta_contado' => $request->precio_venta_contado
             ]);
             DB::commit();

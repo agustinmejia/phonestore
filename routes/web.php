@@ -38,6 +38,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::resource('ventas', VentasController::class);
     Route::get('ventas/ajax/list', [VentasController::class, 'list']);
     Route::post('ventas/pago/store', [VentasController::class, 'pago_store'])->name('ventas.pago.store');
+    Route::delete('ventas/pago/delete/{id}', [VentasController::class, 'pago_delete']);
     // Productos
     Route::resource('productos', ProductosController::class);
     Route::get('productos/ajax/list', [ProductosController::class, 'list']);
@@ -48,6 +49,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::get('reportes/deudas/{dias}', [ReportesController::class, 'index_deudas_list']);
     Route::get('reportes/ventas', [ReportesController::class, 'index_ventas'])->name('index.ventas');
     Route::post('reportes/ventas/lista', [ReportesController::class, 'ventas_lista'])->name('ventas.lista');
+    Route::get('reportes/diario', [ReportesController::class, 'index_diario'])->name('index.diario');
+    Route::post('reportes/diario/lista', [ReportesController::class, 'diario_lista'])->name('diario.lista');
 
     // Cliente
     Route::post('cliente/store', [PersonasController::class, 'store'])->name('cliente.store');

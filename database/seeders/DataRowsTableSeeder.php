@@ -949,134 +949,6 @@ class DataRowsTableSeeder extends Seeder
             ),
             58 => 
             array (
-                'id' => 73,
-                'data_type_id' => 10,
-                'field' => 'id',
-                'type' => 'text',
-                'display_name' => 'Id',
-                'required' => 1,
-                'browse' => 1,
-                'read' => 1,
-                'edit' => 0,
-                'add' => 0,
-                'delete' => 0,
-                'details' => '{}',
-                'order' => 1,
-            ),
-            59 => 
-            array (
-                'id' => 74,
-                'data_type_id' => 10,
-                'field' => 'user_id',
-                'type' => 'text',
-                'display_name' => 'Usuario',
-                'required' => 0,
-                'browse' => 1,
-                'read' => 1,
-                'edit' => 1,
-                'add' => 1,
-                'delete' => 1,
-                'details' => '{}',
-                'order' => 4,
-            ),
-            60 => 
-            array (
-                'id' => 75,
-                'data_type_id' => 10,
-                'field' => 'detalle',
-                'type' => 'text_area',
-                'display_name' => 'Detalle',
-                'required' => 0,
-                'browse' => 1,
-                'read' => 1,
-                'edit' => 1,
-                'add' => 1,
-                'delete' => 1,
-                'details' => '{"validation":{"rule":"required"}}',
-                'order' => 2,
-            ),
-            61 => 
-            array (
-                'id' => 76,
-                'data_type_id' => 10,
-                'field' => 'monto',
-                'type' => 'number',
-                'display_name' => 'Monto',
-                'required' => 0,
-                'browse' => 1,
-                'read' => 1,
-                'edit' => 1,
-                'add' => 1,
-                'delete' => 1,
-                'details' => '{"validation":{"rule":"required|max:6"},"step":0.5,"min":0.5}',
-                'order' => 3,
-            ),
-            62 => 
-            array (
-                'id' => 77,
-                'data_type_id' => 10,
-                'field' => 'created_at',
-                'type' => 'timestamp',
-                'display_name' => 'Creado',
-                'required' => 0,
-                'browse' => 1,
-                'read' => 1,
-                'edit' => 0,
-                'add' => 0,
-                'delete' => 0,
-                'details' => '{}',
-                'order' => 5,
-            ),
-            63 => 
-            array (
-                'id' => 78,
-                'data_type_id' => 10,
-                'field' => 'updated_at',
-                'type' => 'timestamp',
-                'display_name' => 'Updated At',
-                'required' => 0,
-                'browse' => 0,
-                'read' => 0,
-                'edit' => 0,
-                'add' => 0,
-                'delete' => 0,
-                'details' => '{}',
-                'order' => 6,
-            ),
-            64 => 
-            array (
-                'id' => 79,
-                'data_type_id' => 10,
-                'field' => 'deleted_at',
-                'type' => 'timestamp',
-                'display_name' => 'Deleted At',
-                'required' => 0,
-                'browse' => 0,
-                'read' => 0,
-                'edit' => 0,
-                'add' => 0,
-                'delete' => 0,
-                'details' => '{}',
-                'order' => 7,
-            ),
-            65 => 
-            array (
-                'id' => 80,
-                'data_type_id' => 10,
-                'field' => 'gasto_belongsto_user_relationship',
-                'type' => 'relationship',
-                'display_name' => 'users',
-                'required' => 1,
-                'browse' => 1,
-                'read' => 1,
-                'edit' => 1,
-                'add' => 1,
-                'delete' => 1,
-                'details' => '{"model":"TCG\\\\Voyager\\\\Models\\\\User","table":"users","type":"belongsTo","column":"user_id","key":"id","label":"name","pivot_table":"compras","pivot":"0","taggable":"0"}',
-                'order' => 8,
-            ),
-            66 => 
-            array (
                 'id' => 81,
                 'data_type_id' => 7,
                 'field' => 'observaciones',
@@ -1091,7 +963,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 9,
             ),
-            67 => 
+            59 => 
             array (
                 'id' => 82,
                 'data_type_id' => 5,
@@ -1107,7 +979,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"model":"App\\\\Models\\\\Categoria","table":"categorias","type":"belongsTo","column":"categoria_id","key":"id","label":"nombre","pivot_table":"categorias","pivot":"0","taggable":"0"}',
                 'order' => 3,
             ),
-            68 => 
+            60 => 
             array (
                 'id' => 83,
                 'data_type_id' => 5,
@@ -1123,7 +995,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 5,
             ),
-            69 => 
+            61 => 
             array (
                 'id' => 84,
                 'data_type_id' => 11,
@@ -1139,7 +1011,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 1,
             ),
-            70 => 
+            62 => 
             array (
                 'id' => 85,
                 'data_type_id' => 11,
@@ -1155,7 +1027,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6}}',
                 'order' => 2,
             ),
-            71 => 
+            63 => 
             array (
                 'id' => 86,
                 'data_type_id' => 11,
@@ -1171,7 +1043,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{"slugify":{"origin":"nombre","forceUpdate":true},"display":{"width":6}}',
                 'order' => 3,
             ),
-            72 => 
+            64 => 
             array (
                 'id' => 87,
                 'data_type_id' => 11,
@@ -1187,7 +1059,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 4,
             ),
-            73 => 
+            65 => 
             array (
                 'id' => 88,
                 'data_type_id' => 11,
@@ -1203,7 +1075,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 5,
             ),
-            74 => 
+            66 => 
             array (
                 'id' => 89,
                 'data_type_id' => 11,
@@ -1219,7 +1091,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 6,
             ),
-            75 => 
+            67 => 
             array (
                 'id' => 90,
                 'data_type_id' => 11,
@@ -1235,7 +1107,7 @@ class DataRowsTableSeeder extends Seeder
                 'details' => '{}',
                 'order' => 7,
             ),
-            76 => 
+            68 => 
             array (
                 'id' => 91,
                 'data_type_id' => 11,
@@ -1250,6 +1122,150 @@ class DataRowsTableSeeder extends Seeder
                 'delete' => 0,
                 'details' => '{}',
                 'order' => 8,
+            ),
+            69 => 
+            array (
+                'id' => 92,
+                'data_type_id' => 12,
+                'field' => 'id',
+                'type' => 'text',
+                'display_name' => 'Id',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 1,
+            ),
+            70 => 
+            array (
+                'id' => 93,
+                'data_type_id' => 12,
+                'field' => 'user_id',
+                'type' => 'text',
+                'display_name' => 'User Id',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{}',
+                'order' => 2,
+            ),
+            71 => 
+            array (
+                'id' => 94,
+                'data_type_id' => 12,
+                'field' => 'tipo',
+                'type' => 'select_dropdown',
+                'display_name' => 'Tipo',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"options":{"ingreso":"ingreso","egreso":"egreso"},"display":{"width":6}}',
+                'order' => 4,
+            ),
+            72 => 
+            array (
+                'id' => 95,
+                'data_type_id' => 12,
+                'field' => 'detalle',
+                'type' => 'text_area',
+                'display_name' => 'Detalle',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"}}',
+                'order' => 6,
+            ),
+            73 => 
+            array (
+                'id' => 96,
+                'data_type_id' => 12,
+                'field' => 'monto',
+                'type' => 'number',
+                'display_name' => 'Monto',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"validation":{"rule":"required|max:191"},"display":{"width":6},"step":1,"min":1}',
+                'order' => 5,
+            ),
+            74 => 
+            array (
+                'id' => 97,
+                'data_type_id' => 12,
+                'field' => 'created_at',
+                'type' => 'timestamp',
+                'display_name' => 'Creado',
+                'required' => 0,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 7,
+            ),
+            75 => 
+            array (
+                'id' => 98,
+                'data_type_id' => 12,
+                'field' => 'updated_at',
+                'type' => 'timestamp',
+                'display_name' => 'Updated At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 8,
+            ),
+            76 => 
+            array (
+                'id' => 99,
+                'data_type_id' => 12,
+                'field' => 'deleted_at',
+                'type' => 'timestamp',
+                'display_name' => 'Deleted At',
+                'required' => 0,
+                'browse' => 0,
+                'read' => 0,
+                'edit' => 0,
+                'add' => 0,
+                'delete' => 0,
+                'details' => '{}',
+                'order' => 9,
+            ),
+            77 => 
+            array (
+                'id' => 100,
+                'data_type_id' => 12,
+                'field' => 'registros_caja_belongsto_user_relationship',
+                'type' => 'relationship',
+                'display_name' => 'Usuario',
+                'required' => 1,
+                'browse' => 1,
+                'read' => 1,
+                'edit' => 1,
+                'add' => 1,
+                'delete' => 1,
+                'details' => '{"model":"TCG\\\\Voyager\\\\Models\\\\User","table":"users","type":"belongsTo","column":"user_id","key":"id","label":"name","pivot_table":"categorias","pivot":"0","taggable":"0"}',
+                'order' => 3,
             ),
         ));
         

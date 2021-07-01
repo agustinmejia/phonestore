@@ -101,7 +101,9 @@
 
                                                             foreach ($item->cuotas as $cuota) {
                                                                 foreach ($cuota->pagos as $pago) {
-                                                                    $pagos += $pago->monto;
+                                                                    if(!$pago->deleted_at){
+                                                                        $pagos += $pago->monto;
+                                                                    }
                                                                 }
                                                             }
                                                         @endphp
@@ -138,6 +140,8 @@
         </div>
     </div>
 
+    @include('partials.modal-delete')
+
     {{-- Detalle de cuotas --}}
     <form action="{{ route('ventas.pago.store') }}" method="post">
         <div class="modal modal-success fade" tabindex="-1" id="detalle_modal" role="dialog">
@@ -161,7 +165,7 @@
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div role="tabpanel" class="tab-pane active" id="home">
-                                    <div class="table-responsive" style="max-height: 250px; overflow-y: auto">
+                                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto">
                                         <table class="table table-hover">
                                             <thead>
                                                 <tr>
@@ -191,8 +195,7 @@
                                         <div class="col-md-12">
                                             @csrf
                                             <input type="hidden" name="id" value="{{ $reg->id }}">
-                                            <input type="hidden" name="ventas_detalles_cuota_id" id="input-id_cuota">
-                                            <input type="hidden" name="monto" id="input-monto">
+                                            <input type="hidden" name="ventas_detalle_id" id="input-ventas_detalle_id">
                                             <div class="form-group">
                                                 <label>Monto a pagar</label>
                                                 <input type="number" name="pago" id="input-pago" step="1" min="0" class="form-control" required />
@@ -229,6 +232,7 @@
 @section('javascript')
     <script src="{{ asset('js/moment.js') }}"></script>
     <script src="{{ asset('js/moment-with-locales.js') }}"></script>
+    <script src="{{ url('js/main.js') }}"></script>
     <script>
         $(document).ready(function () {
             moment.locale('es');
@@ -238,24 +242,26 @@
                 let detalle = '';
                 data.map(item => {
                     let totalPago = 0;
-                    item.pagos.map(pago => {
-                        totalPago += parseFloat(pago.monto)
-                    });
-                    let fecha = new Date(item.fecha);
-
+                    let fecha = new Date(item.fecha+' 00:00:00');
                     let pagos = '';
                     item.pagos.map(pago => {
-                        pagos += `<p>${moment(pago.created_at).format('D/MMMM/YYYY')} ${pago.monto} Bs. <br> <small>${pago.observaciones}</small></p>`;
+                        if(!pago.deleted_at){
+                            totalPago += parseFloat(pago.monto)
+                        }
+                        pagos += `  <tr>
+                                        <td><span style="${pago.deleted_at ? 'text-decoration: line-through; color: #f96868' : ''}">${moment(pago.created_at).format('DD/MMMM/YYYY')} ${parseFloat(pago.monto).toFixed(0)} Bs.</span> <br> <small class="${pago.deleted_at ? 'text-danger' : ''}">${pago.observaciones ?  pago.observaciones : ''}</small></td>
+                                        <td><button type="button" class="btn btn-danger btn-sm" ${pago.deleted_at ? 'disabled' : ''} data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('${"{{ url('admin/ventas/pago/delete') }}/"+pago.id}');$('#detalle_modal').modal('hide');"><span class="voyager-trash"></span></button></td>
+                                    </tr>`;
                     });
 
                     detalle += `
                         <tr>
                             <td><input type="checkbox" ${item.estado == 'pagada' ? 'disabled' : ''} name="cuotas[]" class="checkbox-cuotas" onclick="total()" value="${item.id}" data-monto="${item.monto - totalPago}" /></td>
                             <td><b>${item.tipo}</b> <br> ${moment(fecha).format('D [de] MMMM, YYYY')}</td>
-                            <td>${item.monto}</td>
-                            <td>${item.monto - totalPago.toFixed(2)}</td>
+                            <td>${parseFloat(item.monto)}</td>
+                            <td>${item.monto - totalPago}</td>
                             <td><span class="text-${item.estado == 'pagada' ? 'success' : 'danger'}">${item.estado}</span></td>
-                            <td>${pagos}</td>
+                            <td style="padding: 0px"><table class="table" style="margin: 0px">${pagos}</table></td>
                         </tr>
                     `;
                 });
@@ -276,12 +282,13 @@
                     let monto = cuota.monto;
                     let montoPagado = 0;
                     cuota.pagos.map(pago => {
-                        montoPagado += parseFloat(pago.monto);
+                        if(!pago.deleted_at){
+                            montoPagado += parseFloat(pago.monto);
+                        }
                     });
-                    $('#input-id_cuota').val(cuota.id);
-                    $('#input-monto').val(cuota.monto);
+                    $('#input-ventas_detalle_id').val(cuota.ventas_detalle_id);
                     $('#input-pago').val(monto-montoPagado);
-                    $('#input-pago').attr('max', monto-montoPagado);
+                    // $('#input-pago').attr('max', monto-montoPagado);
                 }
             });
 
@@ -295,6 +302,10 @@
                 $('#input-descuento').val(0);
                 $('.checkbox-cuotas').prop('checked', false);
                 $('#label-total').html(`0 <small>Bs.</small>`);
+            });
+
+            $('.btn-delete').click(function(){
+                $('#detalle_modal').modal('hide');
             });
         });
 

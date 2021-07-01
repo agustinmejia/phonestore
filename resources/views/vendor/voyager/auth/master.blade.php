@@ -19,6 +19,12 @@
     @else
         <link rel="shortcut icon" href="{{ Voyager::image($admin_favicon) }}" type="image/png">
     @endif
+
+    {{-- SEO --}}
+    <meta property="og:title"         content="{{ Voyager::setting('admin.title') }}" />
+    <meta property="og:description"   content="{{ Voyager::setting('admin.description') }}" />
+    <meta property="og:image"         content="{{ $admin_favicon == '' ? asset('images/icon.png') : Voyager::image($admin_favicon) }}" />
+
     <style>
         body {
             background-image:url('{{ Voyager::image( Voyager::setting("admin.bg_image"), asset("images/banner.jpg") ) }}');

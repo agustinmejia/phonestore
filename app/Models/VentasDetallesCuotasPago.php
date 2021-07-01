@@ -12,4 +12,8 @@ class VentasDetallesCuotasPago extends Model
     protected $fillable = [
         'ventas_detalles_cuota_id', 'user_id', 'monto', 'observaciones'
     ];
+
+    function cuota(){
+        return $this->belongsTo(VentasDetallesCuota::class, 'ventas_detalles_cuota_id');
+    }
 }

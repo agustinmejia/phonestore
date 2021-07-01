@@ -242,7 +242,6 @@ class VentasController extends Controller
                     }
 
                     for ($j=0; $j < $request->cuotas[$i]; $j++) {
-                        $fecha_inicio = date("Y-m-d", strtotime($fecha_inicio."+ $cantidad $periodo"));
                         VentasDetallesCuota::create([
                             'ventas_detalle_id' => $detalle->id,
                             'tipo' => 'cuota',
@@ -250,6 +249,7 @@ class VentasController extends Controller
                             'fecha' => $fecha_inicio,
                             'estado' => 'pendiente'
                         ]);
+                        $fecha_inicio = date("Y-m-d", strtotime($fecha_inicio."+ $cantidad $periodo"));
                     }
                 }
             }
@@ -271,7 +271,7 @@ class VentasController extends Controller
     public function show($id)
     {
         $reg = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'empleado', 'garantes.persona', 'detalles.cuotas.pagos'])
-                        ->where('id', $id)->where('deleted_at', NULL)->first();
+                    ->where('id', $id)->where('deleted_at', NULL)->first();
         // dd($reg);
         return view('ventas.read', compact('reg'));
     }
@@ -347,7 +347,6 @@ class VentasController extends Controller
     }
 
     public function pago_store(Request $request){
-        // dd($request);
         DB::beginTransaction();
         try {
             if($request->cuotas){
@@ -368,20 +367,43 @@ class VentasController extends Controller
                     ]);
                 }
             }else{
-                VentasDetallesCuotasPago::create([
-                    'ventas_detalles_cuota_id' => $request->ventas_detalles_cuota_id,
-                    'user_id' => Auth::user()->id,
-                    'monto' => $request->pago,
-                    'observaciones' => $request->observaciones_alt
-                ]);
-
-                // Obtener todos los pagos de dicha cuota para cambiar su estado a pagada
-                $pagos = VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $request->ventas_detalles_cuota_id)->where('deleted_at', NULL)->get();
-                $total_pagos = $pagos->sum('monto');
-                if($total_pagos >= $request->monto){
-                    VentasDetallesCuota::where('id', $request->ventas_detalles_cuota_id)->update([
-                        'estado' => 'pagada'
-                    ]);
+                $cuotas = VentasDetallesCuota::with(['pagos' => function($q){
+                    $q->where('deleted_at', NULL);
+                }])->where('ventas_detalle_id', $request->id)->where('estado', 'pendiente')->where('deleted_at', NULL)->get();
+                
+                $monto_pago = $request->pago;
+                $aux = '';
+                foreach ($cuotas as $cuota) {
+                    $deuda = $cuota->monto - $cuota->pagos->sum('monto');
+                    if ($monto_pago == 0) break;
+                    if($monto_pago <= $deuda){
+                        VentasDetallesCuotasPago::create([
+                            'ventas_detalles_cuota_id' => $cuota->id,
+                            'user_id' => Auth::user()->id,
+                            'monto' => $monto_pago,
+                            'observaciones' => $request->observaciones_alt
+                        ]);
+                        $monto_pago = 0;
+                    }else{
+                        VentasDetallesCuotasPago::create([
+                            'ventas_detalles_cuota_id' => $cuota->id,
+                            'user_id' => Auth::user()->id,
+                            'monto' => $deuda,
+                            'observaciones' => $request->observaciones_alt
+                        ]);
+                        $monto_pago -= $deuda;
+                    }
+                    // Obtener todos los pagos de dicha cuota para cambiar su estado a pagada
+                    $pagos = VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $cuota->id)->where('deleted_at', NULL)->get();
+                    $total_pagos = $pagos->sum('monto');
+                    if($total_pagos >= $cuota->monto){
+                        VentasDetallesCuota::where('id', $cuota->id)->update([
+                            'estado' => 'pagada'
+                        ]);
+                    }
+                }
+                if($monto_pago > 0){
+                    return redirect()->route('ventas.show', ['venta' => $request->id])->with(['message' => 'El monto ingresado es mayor a la deuda.', 'alert-type' => 'warning']);
                 }
             }
 
@@ -390,6 +412,28 @@ class VentasController extends Controller
         } catch (\Throwable $th) {
             DB::rollback();
             return redirect()->route('ventas.show', ['venta' => $request->id])->with(['message' => 'Ocurrio un error al guardar la venta.', 'alert-type' => 'error']);
+        }
+    }
+
+    public function pago_delete($id, Request $request){
+        $pago = VentasDetallesCuotasPago::with('cuota.detalle')->where('id', $id)->first();
+
+        DB::beginTransaction();
+        try {
+            VentasDetallesCuotasPago::where('id', $id)->update([
+                'observaciones' => 'Eliminado por '.Auth::user()->name.' el '.date('d-m-Y').'.',
+                'deleted_at' => Carbon::now()
+            ]);
+
+            VentasDetallesCuota::where('id', $pago->cuota->id)->update([
+                'estado' => 'pendiente'
+            ]);
+            
+            DB::commit();
+            return redirect()->route('ventas.show', ['venta' => $pago->cuota->detalle->venta->id])->with(['message' => 'Pago eliminado exitosamente.', 'alert-type' => 'success']);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return redirect()->route('ventas.show', ['venta' => $pago->cuota->detalle->venta->id])->with(['message' => 'Ocurrio un error al eliminar el pago.', 'alert-type' => 'error']);
         }
     }
 }

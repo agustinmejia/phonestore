@@ -74,8 +74,9 @@
                                                     <th>Tipo</th>
                                                     <th>IMEI/N&deg; de serie</th>
                                                     <th style="width: 100px">Precio compra</th>
-                                                    <th style="width: 100px">Precio venta <br> contado </th>
-                                                    <th style="width: 100px">Precio venta <br> crédito</th>
+                                                    <th style="width: 100px">Venta contado </th>
+                                                    <th style="width: 100px">Venta crédito</th>
+                                                    <th style="width: 100px">Venta crédito</th>
                                                     {{-- <th>Total</th> --}}
                                                     <th>Ganancias</th>
                                                     <th style="width: 50px"></th>
@@ -125,6 +126,14 @@
     </div>
 @stop
 
+@section('css')
+    <style>
+        th{
+            font-size: 11px !important
+        }
+    </style>
+@endsection
+
 @section('javascript')  
     <script>
         $(document).ready(function(){
@@ -145,6 +154,7 @@
                     <td><input type="number" step="1" min="1" name="precio_compra[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" value="" id="input-precio_compra-${indexTable}" required/></td>
                     <td><input type="number" step="1" min="1" name="precio_venta_contado[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta_contado-${indexTable}" required/></td>
                     <td><input type="number" step="1" min="1" name="precio_venta[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta-${indexTable}" required/></td>
+                    <td><input type="number" step="1" min="1" name="precio_venta_alt[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta_alt-${indexTable}"/></td>
                     <td><h5 id="label-ganancia-${indexTable}">0.00</h5></td>
                     <td><button type="button" onclick="removeTr(${indexTable})" class="btn btn-link"><i class="voyager-trash text-danger"></i></button></td>
                 </tr>
@@ -155,13 +165,15 @@
         function subTotal(index){
             let precio_compra = $(`#input-precio_compra-${index}`).val() ? parseFloat($(`#input-precio_compra-${index}`).val()) : 0;
             let precio_venta = $(`#input-precio_venta-${index}`).val() ? parseFloat($(`#input-precio_venta-${index}`).val()) : 0;
+            let precio_venta_alt = $(`#input-precio_venta_alt-${index}`).val() ? parseFloat($(`#input-precio_venta_alt-${index}`).val()) : 0;
             let precio_venta_contado = $(`#input-precio_venta_contado-${index}`).val() ? parseFloat($(`#input-precio_venta_contado-${index}`).val()) : 0;
             let ganancia = precio_venta - precio_compra;
+            let ganancia_alt = precio_venta_alt - precio_compra;
             let ganancia_contado = precio_venta_contado - precio_compra;
 
-            $(`#label-ganancia-${index}`).text(`${ganancia_contado} | ${ganancia}`);
+            $(`#label-ganancia-${index}`).html(`${ganancia_contado} <br> ${ganancia} <br> ${ganancia_alt}`);
 
-            if(ganancia <= 0 || ganancia_contado <= 0){
+            if(ganancia <= 0 || ganancia_contado <= 0 || ganancia_alt <= 0){
                 $(`#label-ganancia-${index}`).addClass('text-danger');
             }else{
                 $(`#label-ganancia-${index}`).removeClass('text-danger');

@@ -68,6 +68,7 @@
                                                 <th style="text-align: right">Estado</th>
                                                 <th style="text-align: right">Precio de venta al contado</th>
                                                 <th style="text-align: right">Precio de venta al crédito</th>
+                                                <th style="text-align: right">Precio de venta al crédito</th>
                                                 <th style="text-align: right">Precio de compra</th>
                                             </tr>
                                         </thead>
@@ -118,6 +119,7 @@
                                                     </td>
                                                     <td style="text-align: right; @if($item->estado == 'eliminado') text-decoration: line-through @endif">Bs. {{ $item->precio_venta_contado }} <br> <small>Ganancia: {{ number_format($item->precio_venta_contado - $item->precio_compra, 2, ',', '.') }}</small> </td>
                                                     <td style="text-align: right; @if($item->estado == 'eliminado') text-decoration: line-through @endif">Bs. {{ $item->precio_venta }} <br> <small>Ganancia: {{ number_format($item->precio_venta - $item->precio_compra, 2, ',', '.') }}</small></td>
+                                                    <td style="text-align: right; @if($item->estado == 'eliminado') text-decoration: line-through @endif">Bs. {{ $item->precio_venta_alt }} <br> <small>Ganancia: {{ number_format($item->precio_venta_alt - $item->precio_compra, 2, ',', '.') }}</small></td>
                                                     <td style="text-align: right; @if($item->estado == 'eliminado') text-decoration: line-through @endif">Bs. {{ $item->precio_compra }}</td>
                                                     {{-- <td style="text-align: right">
                                                         <button class="btn btn-success btn-sm btn-detalle" data-toggle="modal" data-target="#detalle_modal" data-cuotas='@json($item->cuotas)'>
@@ -127,7 +129,7 @@
                                                 </tr>
                                             @endforeach
                                             <tr>
-                                                <td colspan="4" class="text-right"><b>TOTAL</b></td>
+                                                <td colspan="5" class="text-right"><b>TOTAL</b></td>
                                                 <td class="text-right"><h4>Bs. {{ number_format($total , 2, ',', '.') }}</h4></td>
                                             </tr>
                                         </tbody>

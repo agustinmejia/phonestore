@@ -213,7 +213,7 @@
                                                 <th style="width: 150px">Cuota inicial Bs.</th>
                                                 <th style="width: 120px">Cant. cuotas</th>
                                                 <th>Periodo</th>
-                                                <th style="min-width: 50px">Cuota Bs.</th>
+                                                <th style="width: 100px">Cuota Bs.</th>
                                                 <th style="width: 50px"></th>
                                             </thead>
                                             <tbody id="table-detalle"></tbody>
@@ -224,7 +224,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td colspan="5" style="text-align: right"><b>DESCUENTO</b></td>
-                                                    <td colspan="2"><input type="number" name="descuento" step="0.1" min="0" value="0" class="form-control" id="input-descuento" onchange="total();total_pago()" onkeyup="total();total_pago()" onclick="$(this).select()" style="text-align: right; font-size: 18px; font-weight: 500; width: 120px" required></td>
+                                                    <td colspan="2"><input type="number" name="descuento" step="0.1" min="0" value="0" class="form-control" id="input-descuento" onchange="total();total_pago()" onkeyup="total();total_pago()" onclick="$(this).select()" style="text-align: right; font-size: 18px; font-weight: 500; width: 150px" required></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="5" style="text-align: right"><b><input type="checkbox" value="1" id="checkbox-iva" /> IVA</b></td>
@@ -403,6 +403,7 @@
                     <td>
                         <select name="precio[]" class="form-control select-precio" id="select-precio-${data.id}" onchange="subTotal(${data.id})" required>
                             <option value="${data.precio_venta}" data-type="credito">${data.precio_venta} - Crédito</option>
+                            <option value="${data.precio_venta_alt}" data-type="credito">${data.precio_venta_alt} - Crédito</option>
                             <option value="${data.precio_venta_contado}" data-type="contado">${data.precio_venta_contado} - Contado</option>
                         </select>
                     </td>
@@ -427,20 +428,11 @@
                 </tr>
             `);
 
-            let subtotal = 0;
-            $('.select-precio').each(function(){
-                subtotal += parseFloat($(this).val());
-            });
-            $('#label-subtotal').html(`${subtotal.toFixed(2)} <small>Bs.</small>`);
-            $('#input-subtotal').val(subtotal);
-
             showHelp();
-            total();
-            total_pago();
+            subTotal(data.id)
             toastr.info('Equipo agregado a las lista', 'Información');
         }
         function subTotal(index){
-
             let precio = $(`#select-precio-${index} option:selected`).val() ? parseFloat($(`#select-precio-${index} option:selected`).val()) : 0;
             let type = $(`#select-precio-${index} option:selected`).data('type');
             if(type == 'contado'){
@@ -462,13 +454,22 @@
             }else{
                 toastr.error('Debes ingresar el número de cuotas', 'Error');
             }
-            total_pago();
+
+            let subtotal = 0;
+            $('.select-precio').each(function(){
+                subtotal += parseFloat($(this).val());
+            });
+            $('#label-subtotal').html(`${subtotal.toFixed(2)} <small>Bs.</small>`);
+            $('#input-subtotal').val(subtotal);
+
+            total();
         }
         function total(){
             let subtotal = parseFloat($('#input-subtotal').val());
             let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
             let iva = parseFloat($('#input-iva').val());
             $('#label-total').html(`${(subtotal-descuento+iva).toFixed(2)} <small>Bs.</small>`);
+            total_pago()
         }
         function total_pago(){
             let total_pago = 0;
