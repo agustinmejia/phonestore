@@ -105,7 +105,7 @@ class ProductosController extends Controller
                             <small>Ganancia: </small><b>Bs. '.($row->venta->precio-$row->precio_compra).'</b><br>
                             <small>Nro de cuotas: </small><b>'.count($row->venta->cuotas->where('tipo', 'cuota')).'</b>
                             <small> - pagadas: </small><b>'.count($row->venta->cuotas->where('estado', 'pagada')->where('tipo', 'cuota')).'</b> <br>
-                            <small>Monto pagado: </small><b>Bs. '.$monto_pagado.'</b> - <small>Deuda: </small><b>Bs. '.($row->venta->precio - $monto_pagado).'</b>
+                            <small>Monto pagado: </small><b>Bs. '.$monto_pagado.'</b> <br> <small>Deuda: </small><b>Bs. '.($row->venta->precio - $monto_pagado).'</b>
                         </div>
                     ';
                 }

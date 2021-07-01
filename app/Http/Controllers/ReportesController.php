@@ -11,7 +11,9 @@ use Carbon\Carbon;
 // Models
 use App\Models\VentasDetallesCuota;
 use App\Models\Venta;
+use App\Models\VentasDetalle;
 use App\Models\RegistrosCaja;
+use App\Models\VentasDetallesCuotasPago;
 
 class ReportesController extends Controller
 {
@@ -96,7 +98,11 @@ class ReportesController extends Controller
 
     public function diario_lista(Request $request){
         $query_user = $request->user_id ? 'user_id = '.$request->user_id : 1;
-        $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->whereRaw($query_user)->get();
-        return view('reportes.diario-lista', compact('registros_cajas'));
+        $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->whereRaw($query_user)->withTrashed()->get();
+        $pagos = VentasDetallesCuotasPago::with(['cuota.detalle.venta.cliente', 'cuota.detalle.producto.tipo.marca'])
+                    ->whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->withTrashed()->get();
+        $ventas = VentasDetalle::with(['producto.tipo.marca', 'venta.cliente'])->where('deleted_at', NULL)->get();
+        // dd($ventas);
+        return view('reportes.diario-lista', compact('registros_cajas', 'pagos', 'ventas'));
     }
 }
