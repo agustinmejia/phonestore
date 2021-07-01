@@ -20,6 +20,6 @@ class Producto extends Model
     }
 
     function venta(){
-        return $this->hasOne(VentasDetalle::class);
+        return $this->hasOne(VentasDetalle::class)->withTrashed();
     }
 }

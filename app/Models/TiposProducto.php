@@ -20,6 +20,6 @@ class TiposProducto extends Model
     }
 
     function productos(){
-        return $this->hasMany(Producto::class);
+        return $this->hasMany(Producto::class)->withTrashed();
     }
 }

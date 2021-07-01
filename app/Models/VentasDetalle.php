@@ -15,14 +15,14 @@ class VentasDetalle extends Model
     ];
 
     function producto(){
-        return $this->belongsTo(Producto::class, 'producto_id');
+        return $this->belongsTo(Producto::class, 'producto_id')->withTrashed();
     }
 
     function cuotas(){
-        return $this->hasMany(VentasDetallesCuota::class);
+        return $this->hasMany(VentasDetallesCuota::class)->withTrashed();
     }
 
     function venta(){
-        return $this->belongsTo(Venta::class, 'venta_id');
+        return $this->belongsTo(Venta::class, 'venta_id')->withTrashed();
     }
 }

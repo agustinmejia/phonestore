@@ -15,10 +15,10 @@ class VentasDetallesCuota extends Model
     ];
 
     function pagos(){
-        return $this->hasMany(VentasDetallesCuotasPago::class);
+        return $this->hasMany(VentasDetallesCuotasPago::class)->withTrashed();
     }
 
     function detalle(){
-        return $this->belongsTo(VentasDetalle::class, 'ventas_detalle_id');
+        return $this->belongsTo(VentasDetalle::class, 'ventas_detalle_id')->withTrashed();
     }
 }

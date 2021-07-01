@@ -15,6 +15,6 @@ class VentasDetallesCuotasPago extends Model
     ];
 
     function cuota(){
-        return $this->belongsTo(VentasDetallesCuota::class, 'ventas_detalles_cuota_id');
+        return $this->belongsTo(VentasDetallesCuota::class, 'ventas_detalles_cuota_id')->withTrashed();
     }
 }

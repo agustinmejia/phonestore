@@ -12,6 +12,6 @@ class Marca extends Model
     protected $dates = ['deleted_at'];
 
     function tipos(){
-        return $this->hasMany(TiposProducto::class);
+        return $this->hasMany(TiposProducto::class)->withTrashed();
     }
 }

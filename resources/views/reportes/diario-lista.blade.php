@@ -119,7 +119,7 @@
 </div>
 
 <div class="table-responsive">
-    <h4>Pagos de cuotas</h4>
+    <h4>ventas de productos</h4>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -151,7 +151,6 @@
                                 <td>
                                     <b>{{ $venta->producto->tipo->marca->nombre }} {{ $venta->producto->tipo->nombre }}</b><br>
                                     <small>IMEI/N&deg; de serie: {{ $venta->producto->imei }}</small><br>
-                                    <small>{{ substr($venta->producto->tipo->detalles, 0, 50) }}...</small>
                                 </td>
                             </tr>
                         </table>
@@ -189,7 +188,7 @@
                 @endphp
             @empty
                 <tr>
-                    <td colspan="3"><h4 class="text-center">No se registraron ventas</h4></td>
+                    <td colspan="4"><h4 class="text-center">No se registraron ventas</h4></td>
                 </tr>
             @endforelse
         </tbody>

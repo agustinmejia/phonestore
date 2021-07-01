@@ -99,10 +99,16 @@ class ReportesController extends Controller
     public function diario_lista(Request $request){
         $query_user = $request->user_id ? 'user_id = '.$request->user_id : 1;
         $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->whereRaw($query_user)->withTrashed()->get();
-        $pagos = VentasDetallesCuotasPago::with(['cuota.detalle.venta.cliente', 'cuota.detalle.producto.tipo.marca'])
+        $pagos = VentasDetallesCuotasPago::with(['cuota.detalle.venta.cliente', 'cuota.detalle.producto.tipo.marca', 'cuota.detalle.venta' => function($q)use($query_user){
+                        $q->whereRaw($query_user);
+                    }])
                     ->whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->withTrashed()->get();
-        $ventas = VentasDetalle::with(['producto.tipo.marca', 'venta.cliente'])->where('deleted_at', NULL)->get();
-        // dd($ventas);
+        $ventas = VentasDetalle::with(['producto.tipo.marca', 'venta.cliente', 'venta' => function($q)use($query_user){
+                        $q->whereRaw($query_user);
+                    }])
+                    ->whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))
+                    ->where('deleted_at', NULL)->get();
+        // dd($pagos);
         return view('reportes.diario-lista', compact('registros_cajas', 'pagos', 'ventas'));
     }
 }

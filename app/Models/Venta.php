@@ -15,11 +15,11 @@ class Venta extends Model
     ];
 
     function detalles(){
-        return $this->hasMany(VentasDetalle::class);
+        return $this->hasMany(VentasDetalle::class)->withTrashed();
     }
 
     function garantes(){
-        return $this->hasMany(VentasGarante::class);
+        return $this->hasMany(VentasGarante::class)->withTrashed();
     }
 
     function cliente(){

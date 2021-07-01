@@ -16,10 +16,10 @@ class Persona extends Model
     ];
 
     function ventas(){
-        return $this->hasMany(Venta::class);
+        return $this->hasMany(Venta::class)->withTrashed();
     }
 
     function garante(){
-        return $this->hasMany(VentasGarante::class);
+        return $this->hasMany(VentasGarante::class)->withTrashed();
     }
 }
