@@ -10,28 +10,16 @@
             <div class="form-group form-group-default" id="emailGroup">
                 <label>{{ __('voyager::generic.email') }}</label>
                 <div class="controls">
-                    <input type="text" name="email" id="email" value="{{ old('email') }}" placeholder="{{ __('voyager::generic.email') }}" class="form-control" required>
+                    <input type="text" name="email" id="email" value="{{ env('APP_DEMO', false) ? 'admin@admin.com' : old('email') }}" placeholder="{{ __('voyager::generic.email') }}" class="form-control" required>
                 </div>
             </div>
 
             <div class="form-group form-group-default" id="passwordGroup">
                 <label>{{ __('voyager::generic.password') }}</label>
                 <div class="controls">
-                    <input type="password" name="password" placeholder="{{ __('voyager::generic.password') }}" class="form-control" required>
+                    <input type="password" name="password" placeholder="{{ __('voyager::generic.password') }}" class="form-control" value="{{ env('APP_DEMO', false) ? 'password' : '' }}" required>
                 </div>
             </div>
-
-            @if (env('APP_DEMO', false))
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="alert alert-info">
-                            <small style="font-weight: bold">Ingrese los siguientes datos en el formulario</small><br>
-                            <strong>Email: </strong> admin@admin.com <br>
-                            <strong>Contraseña: </strong> password
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             <div class="form-group" id="rememberMeGroup">
                 <div class="controls">

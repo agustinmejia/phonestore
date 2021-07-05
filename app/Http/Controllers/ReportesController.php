@@ -98,17 +98,40 @@ class ReportesController extends Controller
 
     public function diario_lista(Request $request){
         $query_user = $request->user_id ? 'user_id = '.$request->user_id : 1;
-        $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->whereRaw($query_user)->withTrashed()->get();
-        $pagos = VentasDetallesCuotasPago::with(['cuota.detalle.venta.cliente', 'cuota.detalle.producto.tipo.marca', 'cuota.detalle.venta' => function($q)use($query_user){
+        $fecha = $request->fecha;
+        $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($fecha)))->whereRaw($query_user)->withTrashed()->get();
+        $pagos = VentasDetallesCuotasPago::with(['cuota.detalle.venta.cliente', 'cuota.detalle.producto.tipo.marca'])
+                    ->whereHas('cuota.detalle.venta', function($q)use($query_user){
                         $q->whereRaw($query_user);
-                    }])
-                    ->whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))->withTrashed()->get();
-        $ventas = VentasDetalle::with(['producto.tipo.marca', 'venta.cliente', 'venta' => function($q)use($query_user){
+                    })
+                    ->whereHas('cuota.detalle.venta', function($q)use($fecha){
+                        $q->whereDate('created_at', date('Y-m-d', strtotime($fecha)));
+                    })->withTrashed()->get();
+        $ventas = VentasDetalle::with(['producto.tipo.marca', 'venta.cliente'])
+                    ->whereHas('venta', function($q)use($query_user){
                         $q->whereRaw($query_user);
-                    }])
-                    ->whereDate('created_at', date('Y-m-d', strtotime($request->fecha)))
-                    ->where('deleted_at', NULL)->get();
+                    })
+                    ->whereHas('venta', function($q)use($fecha){
+                        $q->where('fecha', date('Y-m-d', strtotime($fecha)));
+                    })->where('deleted_at', NULL)->get();
         // dd($pagos);
         return view('reportes.diario-lista', compact('registros_cajas', 'pagos', 'ventas'));
+    }
+
+    public function index_deudores(){
+        return view('reportes.deudores-browse');
+    }
+
+    public function deudores_lista(Request $request){
+        if($request->tipo == 'todas'){
+            $deudas = VentasDetalle::with(['producto.tipo.marca', 'cuotas.pagos', 'venta.cliente'])->where('deleted_at',  NULL)->get();
+        }else{
+            $deudas = VentasDetalle::with(['producto.tipo.marca', 'cuotas.pagos', 'venta.cliente'])
+                        ->whereHas('cuotas', function($q){
+                            $q->where('fecha', '<', date('Y-m-d'))->where('estado', 'pendiente')->where('deleted_at',  NULL);
+                        })
+                        ->where('deleted_at',  NULL)->get();
+        }
+        return view('reportes.deudores-lista', compact('deudas'));
     }
 }

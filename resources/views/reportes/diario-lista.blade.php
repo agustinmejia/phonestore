@@ -92,6 +92,7 @@
             @php
                 $cont = 1;
                 $total_pagos = 0;
+                $total_pagos_deposito = 0;
             @endphp
             @forelse ($pagos as $pago)
                 <tr>
@@ -104,6 +105,9 @@
                     if(!$pago->deleted_at){
                         $total_pagos += $pago->monto;
                     }
+                    if(!$pago->efectivo){
+                        $total_pagos_deposito += $pago->monto;
+                    }
                 @endphp
             @empty
                 <tr>
@@ -112,7 +116,15 @@
             @endforelse
             <tr>
                 <td colspan="2" class="text-right"><h5>TOTAL</h5></td>
-                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_pagos, 2, ',', '.') }}</h4></td>
+                <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_pagos, 2, ',', '.') }}</h5></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-right"><h5>PAGOS POR TRANSFERENCIA</h5></td>
+                <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_pagos_deposito, 2, ',', '.') }}</h5></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-right"><h5>TOTAL EN CAJA</h5></td>
+                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_pagos - $total_pagos_deposito, 2, ',', '.') }}</h4></td>
             </tr>
         </tbody>
     </table>

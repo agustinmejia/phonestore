@@ -363,13 +363,14 @@ class VentasController extends Controller
                         'ventas_detalles_cuota_id' => $item,
                         'user_id' => Auth::user()->id,
                         'monto' => $cuota->monto - $total_pagos,
+                        'efectivo' => $request->deposito ? 0 : 1,
                         'observaciones' => $request->observaciones
                     ]);
                 }
             }else{
                 $cuotas = VentasDetallesCuota::with(['pagos' => function($q){
                     $q->where('deleted_at', NULL);
-                }])->where('ventas_detalle_id', $request->id)->where('estado', 'pendiente')->where('deleted_at', NULL)->get();
+                }])->where('ventas_detalle_id', $request->ventas_detalle_id)->where('estado', 'pendiente')->where('deleted_at', NULL)->get();
                 
                 $monto_pago = $request->pago;
                 $aux = '';
@@ -381,6 +382,7 @@ class VentasController extends Controller
                             'ventas_detalles_cuota_id' => $cuota->id,
                             'user_id' => Auth::user()->id,
                             'monto' => $monto_pago,
+                            'efectivo' => $request->deposito_alt ? 0 : 1,
                             'observaciones' => $request->observaciones_alt
                         ]);
                         $monto_pago = 0;
@@ -389,6 +391,7 @@ class VentasController extends Controller
                             'ventas_detalles_cuota_id' => $cuota->id,
                             'user_id' => Auth::user()->id,
                             'monto' => $deuda,
+                            'efectivo' => $request->deposito_alt ? 0 : 1,
                             'observaciones' => $request->observaciones_alt
                         ]);
                         $monto_pago -= $deuda;

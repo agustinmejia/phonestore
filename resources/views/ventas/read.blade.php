@@ -77,6 +77,7 @@
                                     <table class="table">
                                         <thead>
                                             <tr>
+                                                <th>ID</th>
                                                 <th>Detalle</th>
                                                 <th style="text-align: right">Precio</th>
                                                 <th style="text-align: right">Monto pagado</th>
@@ -90,6 +91,7 @@
                                                     $pagos = 0;
                                                 @endphp
                                                 <tr>
+                                                    <td>{{ $item->id }}</td>
                                                     <td>
                                                         @php
                                                             $img = asset('images/default.jpg');
@@ -181,8 +183,14 @@
                                         </table>
                                     </div>
                                     <div class="form-group">
+                                        <div class="checkbox">
+                                            <label data-toggle="tooltip" title="En caso de que el pago no sea en efectivo seleccione ésta opción"><input type="checkbox" name="deposito" value="1">Transferencia bancaria</label>
+                                          </div>
+                                    </div>
+                                    <div class="form-group">
                                         <label>Descuento</label>
-                                        <input type="number" name="descuento" step="0.5" min="0" value="0" id="input-descuento" onchange="total()" onkeyup="total()" class="form-control">                                    </div>
+                                        <input type="number" name="descuento" step="0.5" min="0" value="0" id="input-descuento" onchange="total()" onkeyup="total()" class="form-control">
+                                    </div>
                                     <div class="form-group">
                                         <textarea name="observaciones" class="form-control" rows="2" placeholder="Observaciones..."></textarea>
                                     </div>
@@ -199,6 +207,12 @@
                                             <div class="form-group">
                                                 <label>Monto a pagar</label>
                                                 <input type="number" name="pago" id="input-pago" step="1" min="0" class="form-control" required />
+                                                <small>En caso de que el monto sobrepase la deuda de la cuota, el saldo pasará a registrarse como pago de la siguiente cuota.</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="checkbox">
+                                                    <label data-toggle="tooltip" title="En caso de que el pago no sea en efectivo seleccione ésta opción"><input type="checkbox" name="deposito_alt" value="1">Transferencia bancaria</label>
+                                                  </div>
                                             </div>
                                             <div class="form-group">
                                                 <label>Observaciones</label>

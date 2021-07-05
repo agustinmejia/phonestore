@@ -35,7 +35,7 @@
                                 <small>Ingrese el rango de fecha del que quiere generar el reporte.</small>
                             </div>
                             <div class="col-md-12" style="height: 150px; display: none" id="div-loading">
-                                <h3 class="text-center" style="margin-top: 50px">Generando reporte...</h3>
+                                <h3 class="text-center" style="margin-top: 50px"> <img src="{{ asset('images/loading.gif') }}" alt="loading" width="50px"> Generando reporte...</h3>
                             </div>
                             <div class="col-md-12" id="div-reporte">
                             </div>

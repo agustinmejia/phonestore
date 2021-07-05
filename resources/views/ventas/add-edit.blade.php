@@ -57,7 +57,7 @@
                                                 @endphp
                                                 @foreach ($categorias as $item)
                                                     <li class="nav-item {{ $clase }}">
-                                                        <a href="#tab-{{ $item->id }}" role="tab" data-toggle="tab">
+                                                        <a href="#tab-{{ $item->id }}" role="tab" data-toggle="tab" style="font-size: 11px">
                                                             {{ $item->nombre }}
                                                         </a>
                                                     </li>
@@ -73,13 +73,19 @@
                                                 <div class="tab-pane fade {{ $clase }}" id="tab-{{ $item->id }}">
                                                     <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                                                         @foreach ($item->marcas as $marca)
-                                                            @if (count($marca->tipos) > 0)
+                                                            @php
+                                                                $productos_disponibles = 0;
+                                                                foreach($marca->tipos as $tipo){
+                                                                    $productos_disponibles += count($tipo->productos);
+                                                                }
+                                                            @endphp
+                                                            @if (count($marca->tipos) > 0 && $productos_disponibles > 0)
                                                                 <div class="panel panel-default" style="margin: 0px">
                                                                     <div class="panel-heading" role="tab" id="headingOne">
                                                                         <h4 class="panel-title">
-                                                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ $item->id }}-{{ $marca->id }}" aria-expanded="true" aria-controls="collapse-{{ $marca->id }}">
-                                                                            {{ $marca->nombre }}
-                                                                        </a>
+                                                                            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse-{{ $item->id }}-{{ $marca->id }}" aria-expanded="true" aria-controls="collapse-{{ $marca->id }}">
+                                                                                {{ $marca->nombre }}
+                                                                            </a>
                                                                         </h4>
                                                                     </div>
                                                                     <div id="collapse-{{ $item->id }}-{{ $marca->id }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">

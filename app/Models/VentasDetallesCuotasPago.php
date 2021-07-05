@@ -11,7 +11,7 @@ class VentasDetallesCuotasPago extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'ventas_detalles_cuota_id', 'user_id', 'monto', 'observaciones'
+        'ventas_detalles_cuota_id', 'user_id', 'monto', 'efectivo', 'observaciones'
     ];
 
     function cuota(){
