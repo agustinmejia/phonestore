@@ -137,6 +137,11 @@ return [
                 'icon_class'   => 'voyager-home',
                 'target_blank' => true,
             ],
+            'Documentación' => [
+                'route'        => '/docs',
+                'icon_class'   => 'voyager-book',
+                'target_blank' => false,
+            ],
             'voyager::generic.logout' => [
                 'route'      => 'voyager.logout',
                 'icon_class' => 'voyager-power',

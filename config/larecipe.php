@@ -94,8 +94,8 @@ return [
     */
 
     'search'            => [
-        'enabled'       => false,
-        'default'       => 'algolia',
+        'enabled'       => true,
+        'default'       => 'internal',
         'engines'       => [
             'internal'  => [
                 'index' => ['h2', 'h3']
@@ -125,8 +125,8 @@ return [
         'fa_v4_shims'    => true, // Add FontAwesome v4 shims prevent BC break
         'show_side_bar'  => true,
         'colors'         => [
-            'primary'    => '#787AF6',
-            'secondary'  => '#2b9cf2'
+            'primary'    => env('APP_PRIMARY_COLOR', '#787AF6'),
+            'secondary'  => env('APP_SECONDARY_COLOR', '#2b9cf2')
         ],
 
         'theme_order'    => null // ['LaRecipeDarkTheme', 'customTheme']

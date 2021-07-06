@@ -1,3 +1,6 @@
-- ## Get Started
-    - [Overview](/{{route}}/{{version}}/overview)
-    - [Overview2](/{{route}}/{{version}}/overview2)
+- ## Empecemos
+    - [Introducción](/{{route}}/{{version}}/overview)
+    - [Instalación](/{{route}}/{{version}}/installation)
+
+- ## Registro de parámetros
+    - [Categorías](/{{route}}/{{version}}/parameters/categories)

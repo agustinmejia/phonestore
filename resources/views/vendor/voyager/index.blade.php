@@ -14,7 +14,7 @@
                             @php
                                 $pagos = \App\Models\VentasDetallesCuotasPago::where('deleted_at', NULL)->whereDate('created_at', date('Y-m-d'))->get();
                                 $registros_caja = \App\Models\RegistrosCaja::where('deleted_at', NULL)->whereDate('created_at', date('Y-m-d'))->get();
-                                $ventas = \App\Models\Venta::where('deleted_at', NULL)->whereDate('created_at', date('Y-m-d'))->get();
+                                $ventas = \App\Models\Venta::where('deleted_at', NULL)->whereDate('fecha', date('Y-m-d'))->get();
                                 $cuotas = \App\Models\VentasDetallesCuota::where('deleted_at', NULL)->whereDate('fecha', date('Y-m-d'))->where('estado', 'pendiente')->get();
                             @endphp
                             <div class="panel panel-bordered" style="border-left: 5px solid #2E86C1">
