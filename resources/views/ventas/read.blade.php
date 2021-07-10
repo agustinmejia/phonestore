@@ -80,6 +80,7 @@
                                                 <th>ID</th>
                                                 <th>Detalle</th>
                                                 <th style="text-align: right">Precio</th>
+                                                <th style="text-align: right">Descuento</th>
                                                 <th style="text-align: right">Monto pagado</th>
                                                 <th style="text-align: right">Deuda</th>
                                                 <th style="text-align: right">Acciones</th>
@@ -89,6 +90,7 @@
                                             @foreach ($reg->detalles as $item)
                                                 @php
                                                     $pagos = 0;
+                                                    $descuento = 0;
                                                 @endphp
                                                 <tr>
                                                     <td>{{ $item->id }}</td>
@@ -107,6 +109,8 @@
                                                                         $pagos += $pago->monto;
                                                                     }
                                                                 }
+
+                                                                $descuento += $cuota->descuento;
                                                             }
                                                         @endphp
                                                         <table>
@@ -121,8 +125,12 @@
                                                         </table>
                                                     </td>
                                                     <td style="text-align: right">Bs. {{ $item->precio }}</td>
+                                                    <td style="text-align: right">Bs. {{ $descuento }}</td>
                                                     <td style="text-align: right">Bs. {{ $pagos }}</td>
-                                                    <td style="text-align: right">Bs. {{ $item->precio - $pagos }}</td>
+                                                    @php
+                                                        $deuda = $item->precio - $pagos- $descuento;
+                                                    @endphp
+                                                    <td style="text-align: right">Bs. {{ $deuda > 0 ? $deuda : 0 }}</td>
                                                     <td style="text-align: right">
                                                         <button class="btn btn-success btn-sm btn-detalle" data-toggle="modal" data-target="#detalle_modal" data-cuotas='@json($item->cuotas)'>
                                                             <i class="voyager-list"></i> <span class="hidden-xs hidden-sm">Detalles</span>
@@ -174,6 +182,8 @@
                                                     <th></th>
                                                     <th>Tipo</th>
                                                     <th>Monto</th>
+                                                    <th>Descuento</th>
+                                                    <th>Total</th>
                                                     <th>Deuda</th>
                                                     <th>Estado</th>
                                                     <th>Pagos</th>
@@ -273,7 +283,9 @@
                             <td><input type="checkbox" ${item.estado == 'pagada' ? 'disabled' : ''} name="cuotas[]" class="checkbox-cuotas" onclick="total()" value="${item.id}" data-monto="${item.monto - totalPago}" /></td>
                             <td><b>${item.tipo}</b> <br> ${moment(fecha).format('D [de] MMMM, YYYY')}</td>
                             <td>${parseFloat(item.monto)}</td>
-                            <td>${item.monto - totalPago}</td>
+                            <td>${parseFloat(item.descuento)}</td>
+                            <td>${parseFloat(item.monto-item.descuento)}</td>
+                            <td>${item.monto - totalPago - item.descuento}</td>
                             <td><span class="text-${item.estado == 'pagada' ? 'success' : 'danger'}">${item.estado}</span></td>
                             <td style="padding: 0px"><table class="table" style="margin: 0px">${pagos}</table></td>
                         </tr>
@@ -326,13 +338,13 @@
         function total(){
             let total = 0;
             let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
-            let primer_pago = null;
+            let pago = 0;
             $('.checkbox-cuotas').each(function(){
                 if($(this).is(':checked')){
                     total += parseFloat($(this).data('monto'));
-                    if(!primer_pago){
-                        primer_pago = parseFloat($(this).data('monto'));
-                    }
+                    // if(!pago){
+                        pago += parseFloat($(this).data('monto'));
+                    // }
                 }
             });
             $('#label-total').html(`${total-descuento} <small>Bs.</small>`);
@@ -343,7 +355,7 @@
                 $('#btn-save').fadeOut();
             }
 
-            if(descuento > primer_pago){
+            if(descuento > pago){
                 toastr.error('El decuento debe ser menor al monto de la primera cuota', 'Error');
                 $('#btn-save').fadeOut();
             }else{

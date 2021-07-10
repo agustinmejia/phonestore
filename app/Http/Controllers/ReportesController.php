@@ -104,9 +104,8 @@ class ReportesController extends Controller
                     ->whereHas('cuota.detalle.venta', function($q)use($query_user){
                         $q->whereRaw($query_user);
                     })
-                    ->whereHas('cuota.detalle.venta', function($q)use($fecha){
-                        $q->whereDate('created_at', date('Y-m-d', strtotime($fecha)));
-                    })->withTrashed()->get();
+                    ->whereDate('created_at', date('Y-m-d', strtotime($fecha)))
+                    ->withTrashed()->get();
         $ventas = VentasDetalle::with(['producto.tipo.marca', 'venta.cliente'])
                     ->whereHas('venta', function($q)use($query_user){
                         $q->whereRaw($query_user);

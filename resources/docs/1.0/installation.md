@@ -10,7 +10,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 <a name="section-requisites"></a>
 ## Requisitos
 
-- Instalar la pila lemp en tu servidor [LEMP](https://www.digitalocean.com/community/tutorials/como-instalar-linux-nginx-mysql-php-pila-lemp-en-ubuntu-18-04-es).
+- Instalar la pila [LEMP](https://www.digitalocean.com/community/tutorials/como-instalar-linux-nginx-mysql-php-pila-lemp-en-ubuntu-18-04-es) en tu servidor.
 - Debe tener todos los requerimientos de [Laravel 8](https://laravel.com/docs/8.x/deployment#server-requirements).
 - Extensiones necesarias para Laravel: 
 ```bash

@@ -77,14 +77,19 @@ class VentasController extends Controller
             })
             ->addColumn('total', function($row){
                 $total = 0;
+                $descuento = 0;
                 foreach ($row->detalles as $item) {
                     $total += $item->precio;
+                    foreach ($item->cuotas as $cuota) {
+                        $descuento += $cuota->descuento;
+                    }
                 }
-                return $total;
+                return $total - $descuento;
             })
             ->addColumn('deuda', function($row){
                 $total = 0;
                 $pagos = 0;
+                $descuento = 0;
                 $proximo_pago = '';
                 foreach ($row->detalles as $item) {
                     $total += $item->precio;
@@ -92,12 +97,14 @@ class VentasController extends Controller
                         if($cuota->estado == 'pendiente' && !$proximo_pago){
                             $proximo_pago = $cuota->fecha;
                         }
-                        foreach ($cuota->pagos as $pago) {
+                        foreach ($cuota->pagos->where('deleted_at', NULL) as $pago) {
                             $pagos += $pago->monto;
                         }
+                        $descuento += $cuota->descuento;
                     }
                 }
-                return ($total-$pagos).($proximo_pago ? '<br><b style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</b>' : '');
+                $deuda = $total - $pagos - $descuento;
+                return ($deuda > 0 ? $deuda : 0).($proximo_pago ? '<br><b style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</b>' : '');
             })
             ->addColumn('action', function($row){
                 $total = 0;
@@ -347,25 +354,40 @@ class VentasController extends Controller
     }
 
     public function pago_store(Request $request){
+        // dd($request);
         DB::beginTransaction();
         try {
             if($request->cuotas){
+                $descuento = $request->descuento ?? 0;
+                $registrar_pago;
                 foreach ($request->cuotas as $item) {
-                    $cuota = VentasDetallesCuota::find($item);
-                    $cuota->estado = 'pagada';
-                    $cuota->descuento = $request->descuento;
-                    $cuota->save();
-
                     $pagos = VentasDetallesCuotasPago::where('ventas_detalles_cuota_id', $item)->where('deleted_at', NULL)->get();
                     $total_pagos = $pagos->sum('monto');
 
-                    VentasDetallesCuotasPago::create([
-                        'ventas_detalles_cuota_id' => $item,
-                        'user_id' => Auth::user()->id,
-                        'monto' => $cuota->monto - $total_pagos,
-                        'efectivo' => $request->deposito ? 0 : 1,
-                        'observaciones' => $request->observaciones
-                    ]);
+                    $cuota = VentasDetallesCuota::find($item);
+                    $cuota->estado = 'pagada';
+                    $monto_pago = $cuota->monto - $total_pagos;
+                    if($descuento > $monto_pago){
+                        $cuota->descuento = $monto_pago;
+                        $descuento -= $monto_pago;
+                        $registrar_pago = false;
+                    }else{
+                        $cuota->descuento = $descuento;
+                        $registrar_pago = true;
+                        $monto_pago = $monto_pago - $descuento;
+                        $descuento = 0;
+                    }
+                    $cuota->save();
+
+                    if ($registrar_pago) {
+                        VentasDetallesCuotasPago::create([
+                            'ventas_detalles_cuota_id' => $item,
+                            'user_id' => Auth::user()->id,
+                            'monto' => $monto_pago,
+                            'efectivo' => $request->deposito ? 0 : 1,
+                            'observaciones' => $request->observaciones
+                        ]);
+                    }
                 }
             }else{
                 $cuotas = VentasDetallesCuota::with(['pagos' => function($q){
@@ -429,7 +451,8 @@ class VentasController extends Controller
             ]);
 
             VentasDetallesCuota::where('id', $pago->cuota->id)->update([
-                'estado' => 'pendiente'
+                'estado' => 'pendiente',
+                'descuento' => 0
             ]);
             
             DB::commit();

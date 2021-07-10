@@ -104,9 +104,9 @@
                     $cont++;
                     if(!$pago->deleted_at){
                         $total_pagos += $pago->monto;
-                    }
-                    if(!$pago->efectivo){
-                        $total_pagos_deposito += $pago->monto;
+                        if(!$pago->efectivo){
+                            $total_pagos_deposito += $pago->monto;
+                        }
                     }
                 @endphp
             @empty
