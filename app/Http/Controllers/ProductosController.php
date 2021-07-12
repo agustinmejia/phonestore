@@ -268,12 +268,27 @@ class ProductosController extends Controller
     {
         DB::beginTransaction();
         try {
-            Producto::where('id', $id)->update([
-                'precio_compra' => $request->precio_compra,
-                'precio_venta' => $request->precio_venta,
-                'precio_venta_alt' => $request->precio_venta_alt,
-                'precio_venta_contado' => $request->precio_venta_contado
-            ]);
+            $producto = Producto::find($id);
+            $producto->precio_compra = $request->precio_compra;
+            $producto->precio_venta = $request->precio_venta;
+            $producto->precio_venta_alt = $request->precio_venta_alt;
+            $producto->precio_venta_contado = $request->precio_venta_contado;
+            $producto->save();
+
+            $productos = Producto::where('tipos_producto_id', $producto->tipos_producto_id)->where('estado', 'disponible')->where('deleted_at', NULL)->get();
+            // dd($productos);
+            foreach ($productos as $value) {
+                if($request->check_precio_venta_contado){
+                    Producto::where('id', $value->id)->update(['precio_venta_contado' => $request->precio_venta_contado]);
+                }
+                if($request->check_precio_venta){
+                    Producto::where('id', $value->id)->update(['precio_venta' => $request->precio_venta]);
+                }
+                if($request->check_precio_venta_alt){
+                    Producto::where('id', $value->id)->update(['precio_venta_alt' => $request->precio_venta_alt]);
+                }
+            }
+
             DB::commit();
             return redirect()->route('productos.index')->with(['message' => 'Producto actualizado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {

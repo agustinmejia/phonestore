@@ -51,7 +51,7 @@
         <tbody>
             @php
                 $cont = 1;
-                $total_egreso = 0;
+                $total_egresos = 0;
             @endphp
             @forelse ($registros_cajas->where('tipo', 'egreso') as $registro)
                 <tr>
@@ -62,7 +62,7 @@
                 @php
                     $cont++;
                     if(!$registro->deleted_at){
-                        $total_egreso += $registro->monto;
+                        $total_egresos += $registro->monto;
                     }
                 @endphp
             @empty
@@ -72,7 +72,7 @@
             @endforelse
             <tr>
                 <td colspan="2" class="text-right"><h5>TOTAL</h5></td>
-                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_egreso, 2, ',', '.') }}</h4></td>
+                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_egresos, 2, ',', '.') }}</h4></td>
             </tr>
         </tbody>
     </table>
@@ -97,7 +97,7 @@
             @forelse ($pagos as $pago)
                 <tr>
                     <td>{{ $cont }}</td>
-                    <td class="@if($pago->deleted_at) deleted @endif">{{ $pago->cuota->detalle->venta->cliente->nombre_completo }} - {{ $pago->cuota->detalle->producto->tipo->marca->nombre }} <b>{{ $pago->cuota->detalle->producto->tipo->nombre }}</b> {{ $pago->cuota->tipo }}</td>
+                    <td class="@if($pago->deleted_at) deleted @endif">{{ $pago->cuota->detalle->venta->cliente->nombre_completo }} - {{ $pago->cuota->detalle->producto->tipo->marca->nombre }} <b>{{ $pago->cuota->detalle->producto->tipo->nombre }}</b> {{ $pago->cuota->tipo }} @if(!$pago->efectivo) <label class="label label-primary">Deposito</label> @endif </td>
                     <td class="text-right @if($pago->deleted_at) deleted @endif">{{ $pago->monto }}</td>
                 </tr>
                 @php
@@ -123,8 +123,16 @@
                 <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_pagos_deposito, 2, ',', '.') }}</h5></td>
             </tr>
             <tr>
+                <td colspan="2" class="text-right"><h5>TOTAL INGRESOS</h5></td>
+                <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_ingresos, 2, ',', '.') }}</h5></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="text-right"><h5>TOTAL EGRESOS</h5></td>
+                <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_egresos, 2, ',', '.') }}</h5></td>
+            </tr>
+            <tr>
                 <td colspan="2" class="text-right"><h5>TOTAL EN CAJA</h5></td>
-                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_pagos - $total_pagos_deposito, 2, ',', '.') }}</h4></td>
+                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_pagos - $total_pagos_deposito + $total_ingresos - $total_egresos, 2, ',', '.') }}</h4></td>
             </tr>
         </tbody>
     </table>

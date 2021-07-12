@@ -92,7 +92,7 @@
         </div>
     </div>
 
-    <!-- Modal crear cliente -->
+    <!-- Modal editar producto -->
     <form id="form" action="#" method="post">
         <div class="modal fade" id="modalequipo" tabindex="-1" role="dialog" aria-labelledby="modalequipoLabel">
             <div class="modal-dialog modal-primary" role="document">
@@ -118,14 +118,27 @@
                                 <div class="form-group">
                                     <label>Precio de venta al contado</label>
                                     <input type="number" step="1" min="1" name="precio_venta_contado" class="form-control input-precios" required />
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="check_precio_venta_contado" value="1">Aplicar a todos los productos similares</label>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Precio de venta al crédito</label>
                                     <input type="number" step="1" min="1" name="precio_venta" class="form-control input-precios" required />
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="check_precio_venta" value="1">Aplicar a todos los productos similares</label>
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label>Precio de venta al crédito</label>
                                     <input type="number" step="1" min="1" name="precio_venta_alt" class="form-control input-precios" required />
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="check_precio_venta_alt" value="1">Aplicar a todos los productos similares</label>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info" style="margin-top: 30px; margin-bottom: 0px">
+                                    <strong>Información:</strong>
+                                    <p>En caso tickear la casilla de <code>Aplicar a todos los productos similares</code>, el monto ingresado se editará en todos los productos similares que estén disponibles.</p>
                                 </div>
                             </div>
                         </div>
