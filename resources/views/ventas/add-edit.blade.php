@@ -198,6 +198,9 @@
                                             @endforeach
                                         @endif
                                     </div>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" name="deposito" value="1">Pago con tranferencia</label>
+                                      </div>
                                     <div class="form-group">
                                         <textarea name="observaciones" class="form-control" rows="3" placeholder="Observaciones">{{ isset($reg) ? $reg->observaciones : old('observaciones') }}</textarea>
                                     </div>
@@ -216,7 +219,8 @@
                                             <thead>
                                                 <th>Detalles del equipo</th>
                                                 <th style="width: 120px">Precio</th>
-                                                <th style="width: 150px">Cuota inicial Bs.</th>
+                                                <th style="width: 100px">Descuento</th>
+                                                <th style="width: 150px">Cuota inicial</th>
                                                 <th style="width: 120px">Cant. cuotas</th>
                                                 <th>Periodo</th>
                                                 <th style="width: 100px">Cuota Bs.</th>
@@ -230,7 +234,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td colspan="5" style="text-align: right"><b>DESCUENTO</b></td>
-                                                    <td colspan="2"><input type="number" name="descuento" step="0.1" min="0" value="0" class="form-control" id="input-descuento" onchange="total();total_pago()" onkeyup="total();total_pago()" onclick="$(this).select()" style="text-align: right; font-size: 18px; font-weight: 500; width: 150px" required></td>
+                                                    <td colspan="2"><input type="hidden" value="0" id="input-descuento" /><h4 style="text-align: right" id="label-descuento">0.00 <small>Bs.</small></h4></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="5" style="text-align: right"><b><input type="checkbox" value="1" id="checkbox-iva" /> IVA</b></td>
@@ -304,6 +308,29 @@
             </div>
         </div>
     </form>
+
+    {{-- Modal precio --}}
+    <div class="modal modal-success fade" tabindex="-1" id="precio_modal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i class="voyager-dollar"></i> Agregar precio de compra personalizado</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Precio personalizado</label>
+                        <input type="hidden" id="input-index-detalle">
+                        <input type="number" step="1" min="1" class="form-control" id="input-precio">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <input type="button" class="btn btn-success" id="btn-add-precio" value="Sí, Agregar precio">
+                </div>
+            </div>
+        </div>
+    </div>
 @stop
 
 @section('css')
@@ -381,6 +408,20 @@
                 });
             });
 
+            $('#btn-add-precio').click(function(){
+                let precio = $('#input-precio').val();
+                let index = $('#input-index-detalle').val();
+                if(precio){
+                    $('#precio_modal').modal('hide');
+                    $('#input-precio').val('');
+                    $(`#select-precio-${index}`).append(`
+                        <option value="${precio}" data-type="credito">${precio}.00 - personalizado </option>
+                    `);
+                    $(`#select-precio-${index}`).val(precio);
+                    subTotal(index);
+                }
+            });
+
         });
         function addTr(data){
             img = "{{ asset('images/default.jpg') }}";
@@ -407,12 +448,14 @@
                         <input type="hidden" name="tipo_venta[]" id="input-tipo_venta-${data.id}" value="credito" required/>
                     </td>
                     <td>
-                        <select name="precio[]" class="form-control select-precio" id="select-precio-${data.id}" onchange="subTotal(${data.id})" required>
+                        <select name="precio[]" class="form-control select-precio" id="select-precio-${data.id}" onchange="selectPrice(${data.id})" required>
                             <option value="${data.precio_venta}" data-type="credito">${data.precio_venta} - Crédito</option>
                             <option value="${data.precio_venta_alt}" data-type="credito">${data.precio_venta_alt} - Crédito</option>
                             <option value="${data.precio_venta_contado}" data-type="contado">${data.precio_venta_contado} - Contado</option>
+                            <option value="otro" data-type="credito">Otro</option>
                         </select>
                     </td>
+                    <td><input type="number" min="0" step="1" name="descuento[]" id="input-descuento-${data.id}" value="0" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" onclick="$(this).select()" class="form-control input-descuento" /></td>
                     <td>
                         <div class="input-group">
                             <input type="number" min="0" step="1" name="cuota_inicial[]" id="input-cuota_inicial-${data.id}" value="0" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" onclick="$(this).select()" class="form-control" />
@@ -420,7 +463,7 @@
                                 <input type="checkbox" class="checkbox-cuota_inicial" onclick="total_pago()" checked name="cuota_inicial_pago[]" value="${data.id}" data-id="${data.id}" />
                             </span>
                         </div>
-                        </td>
+                    </td>
                     <td><input type="number" min="1" step="1" name="cuotas[]" id="input-cuotas-${data.id}" value="1" onchange="subTotal(${data.id})" onkeyup="subTotal(${data.id})" onclick="$(this).select()" class="form-control" required /></td>
                     <td>
                         <select name="periodo[]" class="form-control" required>
@@ -440,7 +483,9 @@
         }
         function subTotal(index){
             let precio = $(`#select-precio-${index} option:selected`).val() ? parseFloat($(`#select-precio-${index} option:selected`).val()) : 0;
+            let descuento = $(`#input-descuento-${index}`).val() ? parseFloat($(`#input-descuento-${index}`).val()) : 0;
             let type = $(`#select-precio-${index} option:selected`).data('type');
+            
             if(type == 'contado'){
                 $(`#input-cuota_inicial-${index}`).val(precio);
                 $(`#input-cuota_inicial-${index}`).attr('readonly', 'readonly');
@@ -454,7 +499,7 @@
             let cantidadCuotas = $(`#input-cuotas-${index}`).val() ? parseFloat($(`#input-cuotas-${index}`).val()) : 0;
 
             if(cantidadCuotas > 0){
-                let cuota = Math.ceil((precio - cuotaInicial) / cantidadCuotas);
+                let cuota = Math.ceil((precio - descuento - cuotaInicial) / cantidadCuotas);
                 $(`#label-pago_cuota-${index}`).text(`${cuota.toFixed(2)}`);
                 $(`#input-pago_cuota-${index}`).val(cuota);
             }else{
@@ -462,24 +507,40 @@
             }
 
             let subtotal = 0;
+            let subtotal_descuento = 0;
             $('.select-precio').each(function(){
                 subtotal += parseFloat($(this).val());
             });
-            $('#label-subtotal').html(`${subtotal.toFixed(2)} <small>Bs.</small>`);
-            $('#input-subtotal').val(subtotal);
+            $('.input-descuento').each(function(){
+                subtotal_descuento += parseFloat($(this).val() ? $(this).val() : 0);
+            });
+            $('#label-subtotal').html(`${(subtotal-subtotal_descuento).toFixed(2)} <small>Bs.</small>`);
+            $('#input-subtotal').val((subtotal-subtotal_descuento));
+
+            $('#label-descuento').html(`${(subtotal_descuento).toFixed(2)} <small>Bs.</small>`);
+            $('#input-descuento').val((subtotal_descuento));
 
             total();
         }
+        function selectPrice(index){
+            let precio = $(`#select-precio-${index} option:selected`).val();
+            if(precio == 'otro'){
+                $('#input-index-detalle').val(index);
+                $('#precio_modal').modal('show');
+            }else{
+                subTotal(index);
+            }
+        }
         function total(){
             let subtotal = parseFloat($('#input-subtotal').val());
-            let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
+            // let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
             let iva = parseFloat($('#input-iva').val());
-            $('#label-total').html(`${(subtotal-descuento+iva).toFixed(2)} <small>Bs.</small>`);
+            $('#label-total').html(`${(subtotal+iva).toFixed(2)} <small>Bs.</small>`);
             total_pago()
         }
         function total_pago(){
             let total_pago = 0;
-            let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
+            // let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
             $('.checkbox-cuota_inicial').each(function(){
                 if($(this).is(':checked')){
                     let id = $(this).data('id');
@@ -487,7 +548,8 @@
                     total_pago += parseFloat(monto);
                 }
             });
-            $('#label-pago').html(`${(total_pago-descuento).toFixed(2)} <small>Bs.</small>`);
+            let iva = parseFloat($('#input-iva').val());
+            $('#label-pago').html(`${(total_pago+iva).toFixed(2)} <small>Bs.</small>`);
         }
         function removeTr(index){
             $(`#tr-${index}`).remove();

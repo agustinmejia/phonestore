@@ -179,7 +179,7 @@ class VentasController extends Controller
                 'user_id' => Auth::user()->id,
                 'observaciones' => $request->observaciones,
                 'fecha' => $fecha,
-                'descuento' => $request->descuento,
+                // 'descuento' => $request->descuento,
                 'iva' => $request->iva
             ]);
 
@@ -198,7 +198,7 @@ class VentasController extends Controller
                 $detalle = VentasDetalle::create([
                     'venta_id' => $venta->id,
                     'producto_id' => $request->producto_id[$i],
-                    'precio' => $request->precio[$i]
+                    'precio' => $request->precio[$i] - $request->descuento[$i]
                 ]);
 
                 Producto::where('id', $request->producto_id[$i])->update([
@@ -222,6 +222,7 @@ class VentasController extends Controller
                             'ventas_detalles_cuota_id' => $cuota->id,
                             'user_id' => Auth::user()->id,
                             'monto' => $request->cuota_inicial[$i],
+                            'efectivo' => $request->deposito ? 0 : 1,
                             'observaciones' => 'Pago al momento de llevar el equipo.'
                         ]);
                     }
