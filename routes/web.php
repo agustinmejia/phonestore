@@ -37,6 +37,7 @@ Route::group(['prefix' => 'admin'], function () {
     // Ventas
     Route::resource('ventas', VentasController::class);
     Route::get('ventas/ajax/list', [VentasController::class, 'list']);
+    Route::get('ventas/{venta}/print', [VentasController::class, 'print'])->name('ventas.print');
     Route::post('ventas/pago/store', [VentasController::class, 'pago_store'])->name('ventas.pago.store');
     Route::delete('ventas/pago/delete/{id}', [VentasController::class, 'pago_delete']);
     // Productos

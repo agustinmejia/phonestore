@@ -9,6 +9,10 @@
             <span class="glyphicon glyphicon-list"></span>&nbsp;
             Volver a la lista
         </a>
+        <a href="{{ route('ventas.print', ['venta' => $reg->id]) }}" target="_blank" class="btn btn-danger">
+            <span class="glyphicon glyphicon-print"></span>&nbsp;
+            Imprimir
+        </a>
     </h1>
 @stop
 
@@ -170,8 +174,11 @@
                                 <li role="presentation">
                                     <a href="#profile" id="tab-profile" aria-controls="profile" role="tab" data-toggle="tab">Pago parcial</a>
                                 </li>
+                                <li role="presentation">
+                                    <a href="#historial" id="tab-historial" aria-controls="historial" role="tab" data-toggle="tab">Historial de pagos</a>
+                                </li>
                             </ul>
-                        
+
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <div role="tabpanel" class="tab-pane active" id="home">
@@ -231,6 +238,21 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div role="tabpanel" class="tab-pane" id="historial">
+                                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>N&deg;</th>
+                                                    <th>Monto</th>
+                                                    <th>Fecha de pago</th>
+                                                    <th>Tipo de pago</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table-historial"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -262,20 +284,23 @@
             moment.locale('es');
             $('[data-toggle="tooltip"]').tooltip();
             $('.btn-detalle').click(function(){
-                let data = $(this).data('cuotas');
+                let cuotas = $(this).data('cuotas');
                 let detalle = '';
-                data.map(item => {
+                let historial = '';
+                let pagos_array = [];
+                cuotas.map(item => {
                     let totalPago = 0;
                     let fecha = new Date(item.fecha+' 00:00:00');
-                    let pagos = '';
+                    let pagos_cuota = '';
                     item.pagos.map(pago => {
+                        pagos_array.push({amount: parseFloat(pago.monto), date: pago.created_at, type: pago.efectivo ? 'Efectivo' : 'Transferencia'});
                         if(!pago.deleted_at){
                             totalPago += parseFloat(pago.monto)
                         }
-                        pagos += `  <tr>
-                                        <td><span style="${pago.deleted_at ? 'text-decoration: line-through; color: #f96868' : ''}">${moment(pago.created_at).format('DD/MMMM/YYYY')} ${parseFloat(pago.monto).toFixed(0)} Bs.</span> <br> <small class="${pago.deleted_at ? 'text-danger' : ''}">${pago.observaciones ?  pago.observaciones : ''}</small></td>
-                                        <td><button type="button" class="btn btn-danger btn-sm" ${pago.deleted_at ? 'disabled' : ''} data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('${"{{ url('admin/ventas/pago/delete') }}/"+pago.id}');$('#detalle_modal').modal('hide');"><span class="voyager-trash"></span></button></td>
-                                    </tr>`;
+                        pagos_cuota += `<tr>
+                                            <td><span style="${pago.deleted_at ? 'text-decoration: line-through; color: #f96868' : ''}">${moment(pago.created_at).format('DD/MMMM/YYYY')} <b>${parseFloat(pago.monto).toFixed(0)} Bs.</b></span> <br> <small class="${pago.deleted_at ? 'text-danger' : ''}">${pago.observaciones ?  pago.observaciones : ''}</small></td>
+                                            <td style="text-align: right"><button type="button" class="btn btn-danger btn-sm" ${pago.deleted_at ? 'disabled' : ''} data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('${"{{ url('admin/ventas/pago/delete') }}/"+pago.id}');$('#detalle_modal').modal('hide');"><span class="voyager-trash"></span></button></td>
+                                        </tr>`;
                     });
 
                     detalle += `
@@ -287,18 +312,41 @@
                             <td>${parseFloat(item.monto-item.descuento)}</td>
                             <td>${item.monto - totalPago - item.descuento}</td>
                             <td><span class="text-${item.estado == 'pagada' ? 'success' : 'danger'}">${item.estado}</span></td>
-                            <td style="padding: 0px"><table class="table" style="margin: 0px">${pagos}</table></td>
+                            <td style="padding: 0px"><table class="table" style="margin: 0px">${pagos_cuota}</table></td>
                         </tr>
                     `;
                 });
+
+                let cont = 1;
+                for (let i = 0; i < pagos_array.length; i++) {
+                    let monto = pagos_array[i].amount;
+                    let pago = pagos_array[i];
+                    for (let j = i+1; j < pagos_array.length; j++) {
+                        if(pago.date == pagos_array[j].date){
+                            monto += pagos_array[j].amount;
+                            i = j;
+                        }
+                    }
+                    historial += `
+                                    <tr>
+                                        <td>${cont}</td>
+                                        <td>${parseFloat(monto)}</td>
+                                        <td>${moment(pago.date).format('D [de] MMMM, YYYY')}</td>
+                                        <td>${pago.type}</td>
+                                    </tr>
+                                `;
+                    cont++;
+                }
+
                 $('#table-detalle').html(detalle);
+                $('#table-historial').html(historial);
                 $('#label-total').html(`0 <small>Bs.</small>`);
                 $('#input-descuento').val(0);
                 $('#btn-save').fadeOut();
 
                 // Pago parcial
                 let cuota = null;
-                data.map(item => {
+                cuotas.map(item => {
                     if(item.estado == 'pendiente' && !cuota){
                         cuota = item;
                     }

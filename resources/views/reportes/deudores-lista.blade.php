@@ -5,9 +5,9 @@
                 <th>N&deg;</th>
                 <th>Cliente</th>
                 <th>Producto</th>
-                <th>Precio</th>
-                <th>Monto Pagado</th>
-                <th>Deuda</th>
+                <th class="text-right">Precio</th>
+                <th class="text-right">Monto Pagado</th>
+                <th class="text-right">Deuda</th>
             </tr>
         </thead>
         <tbody>
@@ -51,8 +51,8 @@
             @endforelse
             <tr>
                 <td colspan="4"></td>
-                <td class="text-right"><h4><small>Bs.</small> {{ $total_pagos }}</h4></td>
-                <td class="text-right"><h4><small>Bs.</small> {{ $total_deudas }}</h4></td>
+                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_pagos, 2, ',', '.') }}</h4></td>
+                <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_deudas, 2, ',', '.') }}</h4></td>
             </tr>
         </tbody>
     </table>

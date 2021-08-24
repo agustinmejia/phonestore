@@ -28,6 +28,12 @@
                                         <input type="date" name="fecha" value="{{ date('Y-m-d') }}" class="form-control" required />
                                     </div>
                                     <div class="form-group">
+                                        De <input type="time" name="inicio" value="{{ date('H:i') }}" class="form-control" required />
+                                    </div>
+                                    <div class="form-group">
+                                        A <input type="time" name="fin" value="{{ date('H:i') }}" class="form-control" required />
+                                    </div>
+                                    <div class="form-group">
                                         <select name="user_id" class="form-control">
                                             <option value="">--Todos los usuarios--</option>
                                             @foreach (\App\Models\User::all() as $item)

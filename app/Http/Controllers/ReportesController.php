@@ -38,7 +38,7 @@ class ReportesController extends Controller
         }
         $data = VentasDetallesCuota::with(['detalle.venta.cliente', 'detalle.venta.garantes.persona'])
                     ->where('deleted_at', NULL)->where('estado', 'pendiente')
-                    ->where('fecha', '<=', date('Y-m-d', strtotime($fecha)))->get();
+                    ->where('fecha', '<=', date('Y-m-d', strtotime($fecha)))->take(10);
         // return $data;
 
         return
@@ -99,12 +99,20 @@ class ReportesController extends Controller
     public function diario_lista(Request $request){
         $query_user = $request->user_id ? 'user_id = '.$request->user_id : 1;
         $fecha = $request->fecha;
-        $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($fecha)))->whereRaw($query_user)->withTrashed()->get();
+        $inicio = $request->inicio;
+        $fin = $request->fin;
+
+        $registros_cajas = RegistrosCaja::whereDate('created_at', date('Y-m-d', strtotime($fecha)))
+                                ->whereTime('created_at', '>=', date('H:i', strtotime($inicio)))
+                                ->whereTime('created_at', '<=', date('H:i', strtotime($fin)))
+                                ->whereRaw($query_user)->withTrashed()->get();
         $pagos = VentasDetallesCuotasPago::with(['cuota.detalle.venta.cliente', 'cuota.detalle.producto.tipo.marca'])
                     ->whereHas('cuota.detalle.venta', function($q)use($query_user){
                         $q->whereRaw($query_user);
                     })
                     ->whereDate('created_at', date('Y-m-d', strtotime($fecha)))
+                    ->whereTime('created_at', '>=', date('H:i', strtotime($inicio)))
+                    ->whereTime('created_at', '<=', date('H:i', strtotime($fin)))
                     ->withTrashed()->get();
         $ventas = VentasDetalle::with(['producto.tipo.marca', 'venta.cliente'])
                     ->whereHas('venta', function($q)use($query_user){
@@ -124,6 +132,13 @@ class ReportesController extends Controller
     public function deudores_lista(Request $request){
         if($request->tipo == 'todas'){
             $deudas = VentasDetalle::with(['producto.tipo.marca', 'cuotas.pagos', 'venta.cliente'])->where('deleted_at',  NULL)->get();
+        }else if($request->tipo == 'diario'){
+            $fecha = $request->fecha;
+            $deudas = VentasDetalle::with(['producto.tipo.marca', 'cuotas.pagos', 'venta.cliente'])
+                        ->whereHas('cuotas', function($q) use($fecha){
+                            $q->where('fecha', date('Y-m-d', strtotime($fecha)))->where('estado', 'pendiente')->where('deleted_at',  NULL);
+                        })
+                        ->where('deleted_at',  NULL)->get();
         }else{
             $deudas = VentasDetalle::with(['producto.tipo.marca', 'cuotas.pagos', 'venta.cliente'])
                         ->whereHas('cuotas', function($q){

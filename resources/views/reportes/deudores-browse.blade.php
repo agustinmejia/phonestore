@@ -25,11 +25,13 @@
                                 <form id="form" class="form-inline" action="{{ route('deudores.lista') }}" method="POST">
                                     @csrf
                                     <div class="form-group">
-                                        <select name="tipo" class="form-control">
+                                        <select name="tipo" id="select-tipo" class="form-control">
                                             <option value="todas">Todas las deudas</option>
+                                            <option value="diario">Diario</option>
                                             <option value="atrasadas">Pagos atrasados</option>
                                         </select>
                                     </div>
+                                    <input type="date" name="fecha" style="display: none" id="input-fecha" class="form-control" value="{{ date('Y-m-d') }}">
                                     <button type="submit" class="btn btn-primary">Generar</button>
                                 </form>
                                 {{-- <small>Ingrese el usuario y la fecha de la que quiere generar el reporte.</small> --}}
@@ -63,6 +65,15 @@
                     $('#div-loading').css('display', 'none');
                     $('#div-reporte').html(res);
                 });
+            });
+
+            $('#select-tipo').change(function(){
+                let val = $('#select-tipo option:selected').val();
+                if(val == 'diario'){
+                    $('#input-fecha').fadeIn();
+                }else{
+                    $('#input-fecha').fadeOut();
+                }
             });
         });
     </script>

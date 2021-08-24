@@ -5,6 +5,7 @@
             <tr>
                 <th style="width: 50px">N&deg;</th>
                 <th>Detalle</th>
+                <th>Observaciones</th>
                 <th class="text-right" style="width: 150px">Monto</th>
             </tr>
         </thead>
@@ -17,6 +18,7 @@
                 <tr>
                     <td>{{ $cont }}</td>
                     <td class="@if($registro->deleted_at) deleted @endif">{{ $registro->detalle }}</td>
+                    <td class="@if($registro->deleted_at) deleted-alt @endif"><b>Eliminado el {{ date('d/m/Y', strtotime($registro->deleted_at)) }}</b></td>
                     <td class="text-right @if($registro->deleted_at) deleted @endif">{{ $registro->monto }}</td>
                 </tr>
                 @php
@@ -27,11 +29,11 @@
                 @endphp
             @empty
                 <tr>
-                    <td colspan="3"><h4 class="text-center">No se registraron ingresos</h4></td>
+                    <td colspan="4"><h4 class="text-center">No se registraron ingresos</h4></td>
                 </tr>
             @endforelse
             <tr>
-                <td colspan="2" class="text-right"><h5>TOTAL</h5></td>
+                <td colspan="3" class="text-right"><h5>TOTAL</h5></td>
                 <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_ingresos, 2, ',', '.') }}</h4></td>
             </tr>
         </tbody>
@@ -45,6 +47,7 @@
             <tr>
                 <th style="width: 50px">N&deg;</th>
                 <th>Detalle</th>
+                <th>Observaciones</th>
                 <th class="text-right" style="width: 150px">Monto</th>
             </tr>
         </thead>
@@ -57,6 +60,7 @@
                 <tr>
                     <td>{{ $cont }}</td>
                     <td class="@if($registro->deleted_at) deleted @endif">{{ $registro->detalle }}</td>
+                    <td class="@if($registro->deleted_at) deleted-alt @endif"><b>Eliminado el {{ date('d/m/Y', strtotime($registro->deleted_at)) }}</b></td>
                     <td class="text-right @if($registro->deleted_at) deleted @endif">{{ $registro->monto }}</td>
                 </tr>
                 @php
@@ -67,11 +71,11 @@
                 @endphp
             @empty
                 <tr>
-                    <td colspan="3"><h4 class="text-center">No se registraron egresos</h4></td>
+                    <td colspan="4"><h4 class="text-center">No se registraron egresos</h4></td>
                 </tr>
             @endforelse
             <tr>
-                <td colspan="2" class="text-right"><h5>TOTAL</h5></td>
+                <td colspan="3" class="text-right"><h5>TOTAL</h5></td>
                 <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_egresos, 2, ',', '.') }}</h4></td>
             </tr>
         </tbody>
@@ -85,6 +89,7 @@
             <tr>
                 <th style="width: 50px">N&deg;</th>
                 <th>Detalle</th>
+                <th>Observaciones</th>
                 <th class="text-right" style="width: 150px">Monto</th>
             </tr>
         </thead>
@@ -98,6 +103,7 @@
                 <tr>
                     <td>{{ $cont }}</td>
                     <td class="@if($pago->deleted_at) deleted @endif">{{ $pago->cuota->detalle->venta->cliente->nombre_completo }} - {{ $pago->cuota->detalle->producto->tipo->marca->nombre }} <b>{{ $pago->cuota->detalle->producto->tipo->nombre }}</b> {{ $pago->cuota->tipo }} @if(!$pago->efectivo) <label class="label label-primary">Deposito</label> @endif </td>
+                    <td class="@if($pago->deleted_at) deleted-alt @endif"><b>{{ $pago->observaciones }}</b></td>
                     <td class="text-right @if($pago->deleted_at) deleted @endif">{{ $pago->monto }}</td>
                 </tr>
                 @php
@@ -111,27 +117,27 @@
                 @endphp
             @empty
                 <tr>
-                    <td colspan="3"><h4 class="text-center">No se registraron pagos de cuotas</h4></td>
+                    <td colspan="4"><h4 class="text-center">No se registraron pagos de cuotas</h4></td>
                 </tr>
             @endforelse
             <tr>
-                <td colspan="2" class="text-right"><h5>TOTAL</h5></td>
+                <td colspan="3" class="text-right"><h5>TOTAL</h5></td>
                 <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_pagos, 2, ',', '.') }}</h5></td>
             </tr>
             <tr>
-                <td colspan="2" class="text-right"><h5>PAGOS POR TRANSFERENCIA</h5></td>
+                <td colspan="3" class="text-right"><h5>PAGOS POR TRANSFERENCIA</h5></td>
                 <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_pagos_deposito, 2, ',', '.') }}</h5></td>
             </tr>
             <tr>
-                <td colspan="2" class="text-right"><h5>TOTAL INGRESOS</h5></td>
+                <td colspan="3" class="text-right"><h5>TOTAL INGRESOS</h5></td>
                 <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_ingresos, 2, ',', '.') }}</h5></td>
             </tr>
             <tr>
-                <td colspan="2" class="text-right"><h5>TOTAL EGRESOS</h5></td>
+                <td colspan="3" class="text-right"><h5>TOTAL EGRESOS</h5></td>
                 <td class="text-right"><h5><small>Bs.</small> {{ number_format($total_egresos, 2, ',', '.') }}</h5></td>
             </tr>
             <tr>
-                <td colspan="2" class="text-right"><h5>TOTAL EN CAJA</h5></td>
+                <td colspan="3" class="text-right"><h5>TOTAL EN CAJA</h5></td>
                 <td class="text-right"><h4><small>Bs.</small> {{ number_format($total_pagos - $total_pagos_deposito + $total_ingresos - $total_egresos, 2, ',', '.') }}</h4></td>
             </tr>
         </tbody>
@@ -218,6 +224,10 @@
 <style>
     .deleted{
         text-decoration: line-through;
+        color: #f96868
+    }
+    .deleted-alt{
+        /* text-decoration: line-through; */
         color: #f96868
     }
 </style>

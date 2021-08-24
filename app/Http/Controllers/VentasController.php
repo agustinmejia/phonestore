@@ -39,7 +39,7 @@ class VentasController extends Controller
 
     public function list()
     {
-        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'garantes.persona', 'detalles.cuotas.pagos'])->where('deleted_at', NULL)->get();
+        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'garantes.persona', 'detalles.cuotas.pagos'])->where('deleted_at', NULL)->take(10);
         // return $data;
 
         return
@@ -52,17 +52,18 @@ class VentasController extends Controller
                 return '
                     <div class="col-md-12">
                         <b>'.$row->cliente->nombre_completo.'</b><br>
-                        <small>Telf: '.('<a href="tel:'.$row->cliente->telefono.'">'.$row->cliente->telefono.'</a>' ?? 'No definido').'</small>
+                        <small>CI:'.($row->cliente->ci ?? 'No definido').'</small><br>
+                        <small>Telf:'.('<a href="tel:'.$row->cliente->telefono.'">'.$row->cliente->telefono.'</a>' ?? 'No definido').'</small>
                     </div>';
             })
             ->addColumn('garante', function($row){
                 $garantes = '';
                 foreach ($row->garantes as $item) {
-                    $garantes .= '<li>'.$item->persona->nombre_completo.' <br> <small>Telf: '.('<a href="tel:'.$item->persona->telefono.'">'.$item->persona->telefono.'</a>' ?? 'No definido').'</small></li>';
+                    $garantes .= $item->persona->nombre_completo.' <br> <small>Telf:'.('<a href="tel:'.$item->persona->telefono.'">'.$item->persona->telefono.'</a>' ?? 'No definido').'</small>';
                 }
                 return '
                     <div class="col-md-12">
-                        <ul>'.$garantes.'</ul>
+                        '.$garantes.'
                     </div>';
             })
             ->addColumn('detalles', function($row){
@@ -284,6 +285,14 @@ class VentasController extends Controller
         return view('ventas.read', compact('reg'));
     }
 
+    public function print($id)
+    {
+        $reg = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'empleado', 'garantes.persona', 'detalles.cuotas.pagos'])
+                    ->where('id', $id)->where('deleted_at', NULL)->first();
+        // dd($reg);
+        return view('ventas.print', compact('reg'));
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -394,7 +403,7 @@ class VentasController extends Controller
                 $cuotas = VentasDetallesCuota::with(['pagos' => function($q){
                     $q->where('deleted_at', NULL);
                 }])->where('ventas_detalle_id', $request->ventas_detalle_id)->where('estado', 'pendiente')->where('deleted_at', NULL)->get();
-                
+
                 $monto_pago = $request->pago;
                 $aux = '';
                 foreach ($cuotas as $cuota) {
@@ -447,7 +456,7 @@ class VentasController extends Controller
         DB::beginTransaction();
         try {
             VentasDetallesCuotasPago::where('id', $id)->update([
-                'observaciones' => 'Eliminado por '.Auth::user()->name.' el '.date('d-m-Y').'.',
+                'observaciones' => 'Eliminado por '.Auth::user()->name.' el '.date('d/m/Y'),
                 'deleted_at' => Carbon::now()
             ]);
 
@@ -455,7 +464,7 @@ class VentasController extends Controller
                 'estado' => 'pendiente',
                 'descuento' => 0
             ]);
-            
+
             DB::commit();
             return redirect()->route('ventas.show', ['venta' => $pago->cuota->detalle->venta->id])->with(['message' => 'Pago eliminado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
