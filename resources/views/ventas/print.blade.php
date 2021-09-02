@@ -11,6 +11,13 @@
     @else
         <link rel="shortcut icon" href="{{ Voyager::image($admin_favicon) }}" type="image/png">
     @endif
+
+    <style>
+        ul{
+            list-style:none;
+            padding-left: 0px
+        }
+    </style>
 </head>
 <body>
     <table width="100%">
@@ -48,11 +55,12 @@
         </tr>
     </table>
     <br>
-    <table width="100%" cellspacing="0" cellpadding="3" border="1">
+    <table width="100%" cellspacing="0" cellpadding="5" border="1">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>Detalle</th>
+                <th>Producto</th>
+                <th>Cuotas</th>
                 <th style="text-align: right">Precio</th>
                 <th style="text-align: right">Descuento</th>
                 {{-- <th style="text-align: right">Monto pagado</th>
@@ -94,25 +102,26 @@
                             <tr>
                                 <td><img src="{{ $img }}" alt="#" width="50px" /></td>
                                 <td>
-                                    <b>{{ $item->producto->tipo->nombre }}</b><br>
-                                    <small>{{ $item->producto->tipo->marca->nombre }}</small><br>
+                                    <b>{{ $item->producto->tipo->marca->nombre }} {{ $item->producto->tipo->nombre }}</b><br>
                                     <small>IMEI/N&deg; de serie {{ $item->producto->imei }}</small>
                                 </td>
                             </tr>
                         </table>
                     </td>
+                    <td>
+                        <ul>
+                            @foreach ($item->cuotas as $cuota)
+                                <li>{{ intval($cuota->monto) }} - {{ date('d/M/Y', strtotime($cuota->fecha)) }}</li>
+                            @endforeach
+                        </ul>
+                    </td>
                     <td style="text-align: right">Bs. {{ $item->precio }}</td>
                     <td style="text-align: right">Bs. {{ $descuento }}</td>
-                    {{-- <td style="text-align: right">Bs. {{ $pagos }}</td> --}}
-                    {{-- @php
-                        $deuda = $item->precio - $pagos- $descuento;
-                    @endphp --}}
-                    {{-- <td style="text-align: right">Bs. {{ $deuda > 0 ? $deuda : 0 }}</td> --}}
                     <td style="text-align: right">Bs. {{ number_format($item->precio - $descuento, 2, ',', '.') }}</td>
                 </tr>
             @endforeach
             <tr>
-                <td colspan="4"><b>TOTAL</b></td>
+                <td colspan="5"><b>TOTAL</b></td>
                 <td style="text-align: right"><b>Bs. {{ number_format($item->precio - $descuento, 2, ',', '.') }}</b></td>
             </tr>
         </tbody>

@@ -54,6 +54,8 @@ Route::group(['prefix' => 'admin'], function () {
     Route::post('reportes/diario/lista', [ReportesController::class, 'diario_lista'])->name('diario.lista');
     Route::get('reportes/deudores', [ReportesController::class, 'index_deudores'])->name('index.deudores');
     Route::post('reportes/deudores/lista', [ReportesController::class, 'deudores_lista'])->name('deudores.lista');
+    Route::get('reportes/pagos', [ReportesController::class, 'index_pagos'])->name('index.pagos');
+    Route::post('reportes/pagos/lista', [ReportesController::class, 'pagos_lista'])->name('pagos.lista');
 
     // Cliente
     Route::post('cliente/store', [PersonasController::class, 'store'])->name('cliente.store');

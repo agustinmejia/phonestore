@@ -1,13 +1,13 @@
 @extends('voyager::master')
 
-@section('page_title', 'Reporte de Ventas')
+@section('page_title', 'Reporte de Pagos')
 
 @section('page_header')
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-9">
                 <h1 class="page-title">
-                    <i class="voyager-basket"></i> Reporte de Ventas
+                    <i class="voyager-dollar"></i> Reporte de Pagos
                 </h1>
             </div>
         </div>
@@ -22,7 +22,7 @@
                     <div class="panel-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <form id="form" class="form-inline" action="{{ route('ventas.lista') }}" method="POST">
+                                <form id="form" class="form-inline" action="{{ route('pagos.lista') }}" method="POST">
                                     @csrf
                                     <div class="form-group">
                                         <input type="date" name="inicio" value="{{ date('Y-m-d') }}" class="form-control" required />

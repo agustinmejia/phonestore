@@ -29,8 +29,10 @@
                 @if ($deuda->venta->detalles->sum('precio') - $pagos > 0)
                     <tr>
                         <td>{{ $cont }}</td>
-                        <td>{{ $deuda->venta->cliente->nombre_completo }}</td>
                         <td>
+                            <b>{{ $deuda->venta->cliente->nombre_completo }}</b> <br>
+                            Cel: {{ $deuda->venta->cliente->telefono }}
+                        </td>                        <td>
                             @foreach ($deuda->venta->detalles as $detalle)
                                 {{ $detalle->producto->tipo->marca->nombre }} <b>{{ $detalle->producto->tipo->nombre }}</b> <br> <small>IMEI/N&deg; de serie {{ $detalle->producto->imei }}</small> <br>
                             @endforeach

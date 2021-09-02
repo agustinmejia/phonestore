@@ -18,7 +18,7 @@
                 <tr>
                     <td>{{ $cont }}</td>
                     <td class="@if($registro->deleted_at) deleted @endif">{{ $registro->detalle }}</td>
-                    <td class="@if($registro->deleted_at) deleted-alt @endif"><b>Eliminado el {{ date('d/m/Y', strtotime($registro->deleted_at)) }}</b></td>
+                    <td class="@if($registro->deleted_at) deleted-alt @endif"><b>{{ $registro->deleted_at ? 'Eliminado el '.date('d/m/Y', strtotime($registro->deleted_at)) : '' }}</b></td>
                     <td class="text-right @if($registro->deleted_at) deleted @endif">{{ $registro->monto }}</td>
                 </tr>
                 @php
@@ -60,7 +60,7 @@
                 <tr>
                     <td>{{ $cont }}</td>
                     <td class="@if($registro->deleted_at) deleted @endif">{{ $registro->detalle }}</td>
-                    <td class="@if($registro->deleted_at) deleted-alt @endif"><b>Eliminado el {{ date('d/m/Y', strtotime($registro->deleted_at)) }}</b></td>
+                    <td class="@if($registro->deleted_at) deleted-alt @endif"><b>{{ $registro->deleted_at ? 'Eliminado el '.date('d/m/Y', strtotime($registro->deleted_at)) : '' }}</b></td>
                     <td class="text-right @if($registro->deleted_at) deleted @endif">{{ $registro->monto }}</td>
                 </tr>
                 @php

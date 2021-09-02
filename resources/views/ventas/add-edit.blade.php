@@ -241,12 +241,12 @@
                                                     <td colspan="2"><input type="hidden" value="0" id="input-iva" name="iva" /><h4 style="text-align: right" id="label-iva">0.00 <small>Bs.</small></h4></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5" style="text-align: right"><b>TOTAL</b></td>
+                                                    <td colspan="5" style="text-align: right"><b>TOTAL DE LA VENTA</b></td>
                                                     <td colspan="2"><h4 style="text-align: right" id="label-total">0.00 <small>Bs.</small></h4></td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="5" style="text-align: right"><b>TOTAL A PAGAR</b></td>
-                                                    <td colspan="2"><h4 style="text-align: right" id="label-pago">0.00 <small>Bs.</small></h4></td>
+                                                    <td colspan="2"><h4 style="text-align: right" id="label-pago-total">0.00 <small>Bs.</small></h4></td>
                                                 </tr>
                                             </tfoot>
                                         </table>
@@ -450,7 +450,7 @@
                     <td>
                         <select name="precio[]" class="form-control select-precio" id="select-precio-${data.id}" onchange="selectPrice(${data.id})" required>
                             <option value="${data.precio_venta}" data-type="credito">${data.precio_venta} - Crédito</option>
-                            <option value="${data.precio_venta_alt}" data-type="credito">${data.precio_venta_alt} - Crédito</option>
+                            ${ data.precio_venta_alt ? '<option value="'+data.precio_venta+'" data-type="credito">'+data.precio_venta+' - Crédito</option>' : '' }
                             <option value="${data.precio_venta_contado}" data-type="contado">${data.precio_venta_contado} - Contado</option>
                             <option value="otro" data-type="credito">Otro</option>
                         </select>
@@ -487,7 +487,7 @@
             let type = $(`#select-precio-${index} option:selected`).data('type');
             
             if(type == 'contado'){
-                $(`#input-cuota_inicial-${index}`).val(precio);
+                $(`#input-cuota_inicial-${index}`).val(precio-descuento);
                 $(`#input-cuota_inicial-${index}`).attr('readonly', 'readonly');
             }else{
                 // $(`#input-cuota_inicial-${index}`).val(0);
@@ -499,9 +499,15 @@
             let cantidadCuotas = $(`#input-cuotas-${index}`).val() ? parseFloat($(`#input-cuotas-${index}`).val()) : 0;
 
             if(cantidadCuotas > 0){
-                let cuota = Math.ceil((precio - descuento - cuotaInicial) / cantidadCuotas);
-                $(`#label-pago_cuota-${index}`).text(`${cuota.toFixed(2)}`);
-                $(`#input-pago_cuota-${index}`).val(cuota);
+                if(type == 'credito'){
+                    let cuota = Math.ceil((precio - descuento - cuotaInicial) / cantidadCuotas);
+                    $(`#label-pago_cuota-${index}`).text(`${cuota.toFixed(2)}`);
+                    $(`#input-pago_cuota-${index}`).val(cuota);
+                }else{
+                    let cuota = Math.ceil(precio - descuento);
+                    $(`#label-pago_cuota-${index}`).text(`${cuota.toFixed(2)}`);
+                    $(`#input-pago_cuota-${index}`).val(cuota);
+                }
             }else{
                 toastr.error('Debes ingresar el número de cuotas', 'Error');
             }
@@ -540,7 +546,6 @@
         }
         function total_pago(){
             let total_pago = 0;
-            // let descuento = $('#input-descuento').val() ? parseFloat($('#input-descuento').val()) : 0;
             $('.checkbox-cuota_inicial').each(function(){
                 if($(this).is(':checked')){
                     let id = $(this).data('id');
@@ -549,7 +554,7 @@
                 }
             });
             let iva = parseFloat($('#input-iva').val());
-            $('#label-pago').html(`${(total_pago+iva).toFixed(2)} <small>Bs.</small>`);
+            $('#label-pago-total').html(`${(total_pago+iva).toFixed(2)} <small>Bs.</small>`);
         }
         function removeTr(index){
             $(`#tr-${index}`).remove();

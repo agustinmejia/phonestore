@@ -48,7 +48,7 @@
                             @endif
 
                             <div class="row">
-                                <div class="col-md-9" style="max-height: 400px; overflow-y: auto">
+                                <div class="col-md-8" style="max-height: 400px; overflow-y: auto; padding: 0px">
                                     <div class="col-md-12">
                                         <div class="form-group">
                                             <label>Productos</label>
@@ -73,20 +73,18 @@
                                                 <thead>
                                                     <th>Tipo</th>
                                                     <th>IMEI/N&deg; de serie</th>
-                                                    <th style="width: 100px">Precio compra</th>
-                                                    <th style="width: 100px">Venta contado </th>
-                                                    <th style="width: 100px">Venta crédito</th>
-                                                    <th style="width: 100px">Venta crédito</th>
-                                                    {{-- <th>Total</th> --}}
-                                                    <th>Ganancias</th>
-                                                    <th style="width: 50px"></th>
+                                                    <th style="width: 110px">Precio compra</th>
+                                                    <th style="width: 110px">Venta contado </th>
+                                                    <th style="width: 110px">Venta crédito</th>
+                                                    <th @if (setting('ventas.precios_credito') != 2) style="display: none" @else style="width: 100px" @endif >Venta crédito</th>
+                                                    <th style="width: 20px"></th>
                                                 </thead>
                                                 <tbody id="table-detalle"></tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-3">
+                                <div class="col-md-4" style="padding-left: 0px">
                                     <div class="form-group">
                                         <label>Proveedor</label>
                                         <select name="proveedor_id" id="select-proveedor_id" class="form-control select2" required>
@@ -131,6 +129,9 @@
         th{
             font-size: 11px !important
         }
+        td{
+            padding: 4px !important;
+        }
     </style>
 @endsection
 
@@ -147,16 +148,26 @@
             });
         });
         function addTr(indexTable, data){
+            let cantidad_precios = "{{ setting('ventas.precios_credito') }}";
+
             $('#table-detalle').append(`
                 <tr id="tr-${indexTable}" class="tr-item">
                     <td><input type="hidden" name="productos_tipo_id[]" class="form-control" placeholder="PC Sure 2021" value="${data.id}" required/>${data.marca.nombre} ${data.nombre}</td>
                     <td><input type="text" name="imei[]" class="form-control" placeholder="123456789..." required/></td>
-                    <td><input type="number" step="1" min="1" name="precio_compra[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" value="" id="input-precio_compra-${indexTable}" required/></td>
-                    <td><input type="number" step="1" min="1" name="precio_venta_contado[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta_contado-${indexTable}" required/></td>
-                    <td><input type="number" step="1" min="1" name="precio_venta[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta-${indexTable}" required/></td>
-                    <td><input type="number" step="1" min="1" name="precio_venta_alt[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta_alt-${indexTable}"/></td>
-                    <td><h5 id="label-ganancia-${indexTable}">0.00</h5></td>
-                    <td><button type="button" onclick="removeTr(${indexTable})" class="btn btn-link"><i class="voyager-trash text-danger"></i></button></td>
+                    <td><input type="number" step="1" min="1" name="precio_compra[]" class="form-control imput-sm" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" value="" id="input-precio_compra-${indexTable}" required/></td>
+                    <td>
+                        <input type="number" step="1" min="1" name="precio_venta_contado[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta_contado-${indexTable}" required/>
+                        <small style="font-size: 11px" id="ganancia_contado-${indexTable}"></small>
+                    </td>
+                    <td>
+                        <input type="number" step="1" min="1" name="precio_venta[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta-${indexTable}" required/>
+                        <small style="font-size: 11px" id="ganancia_credito-${indexTable}"></small>
+                    </td>
+                    <td ${cantidad_precios != 2 ? 'style="display:none"' : ''}>
+                        <input type="number" step="1" min="1" name="precio_venta_alt[]" class="form-control" onchange="subTotal(${indexTable})" onkeyup="subTotal(${indexTable})" id="input-precio_venta_alt-${indexTable}"/>
+                        <small style="font-size: 11px" id="ganancia_credito_alt-${indexTable}"></small>
+                    </td>
+                    <td><button type="button" style="padding: 0px" onclick="removeTr(${indexTable})" class="btn btn-link"><i class="voyager-trash text-danger"></i></button></td>
                 </tr>
             `);
             showHelp();
@@ -164,20 +175,22 @@
         }
         function subTotal(index){
             let precio_compra = $(`#input-precio_compra-${index}`).val() ? parseFloat($(`#input-precio_compra-${index}`).val()) : 0;
+            let precio_venta_contado = $(`#input-precio_venta_contado-${index}`).val() ? parseFloat($(`#input-precio_venta_contado-${index}`).val()) : 0;
             let precio_venta = $(`#input-precio_venta-${index}`).val() ? parseFloat($(`#input-precio_venta-${index}`).val()) : 0;
             let precio_venta_alt = $(`#input-precio_venta_alt-${index}`).val() ? parseFloat($(`#input-precio_venta_alt-${index}`).val()) : 0;
-            let precio_venta_contado = $(`#input-precio_venta_contado-${index}`).val() ? parseFloat($(`#input-precio_venta_contado-${index}`).val()) : 0;
-            let ganancia = precio_venta - precio_compra;
-            let ganancia_alt = precio_venta_alt - precio_compra;
+            
             let ganancia_contado = precio_venta_contado - precio_compra;
+            let ganancia_credito = precio_venta - precio_compra;
+            let ganancia_credito_alt = precio_venta_alt - precio_compra;
+            
+            $(`#ganancia_contado-${index}`).html(`${ganancia_contado <= 0 ? 'Pérdida' : 'Ganancia'} ${ganancia_contado} Bs.`);
+            ganancia_contado <= 0 ? $(`#ganancia_contado-${index}`).addClass('text-danger') : $(`#ganancia_contado-${index}`).removeClass('text-danger');
 
-            $(`#label-ganancia-${index}`).html(`${ganancia_contado} <br> ${ganancia} <br> ${ganancia_alt}`);
+            $(`#ganancia_credito-${index}`).html(`${ganancia_credito <= 0 ? 'Pérdida' : 'Ganancia'} ${ganancia_credito} Bs.`);
+            ganancia_credito <= 0 ? $(`#ganancia_credito-${index}`).addClass('text-danger') : $(`#ganancia_credito-${index}`).removeClass('text-danger');
 
-            if(ganancia <= 0 || ganancia_contado <= 0 || ganancia_alt <= 0){
-                $(`#label-ganancia-${index}`).addClass('text-danger');
-            }else{
-                $(`#label-ganancia-${index}`).removeClass('text-danger');
-            }
+            $(`#ganancia_credito_alt-${index}`).html(`${ganancia_credito_alt <= 0 ? 'Pérdida' : 'Ganancia'} ${ganancia_credito_alt} Bs.`);
+            ganancia_credito_alt <= 0 ? $(`#ganancia_credito_alt-${index}`).addClass('text-danger') : $(`#ganancia_credito_alt-${index}`).removeClass('text-danger');
         }
         function removeTr(index){
             $(`#tr-${index}`).remove();

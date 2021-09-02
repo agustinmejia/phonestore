@@ -119,11 +119,12 @@
                                                         @endphp
                                                         <table>
                                                             <tr>
-                                                                <td><img src="{{ $img }}" alt="#" width="50px" /></td>
+                                                                <td><img src="{{ $img }}" alt="#" width="70px" /></td>
                                                                 <td>
-                                                                    <b>{{ $item->producto->tipo->nombre }}</b><br>
-                                                                    <small>{{ $item->producto->tipo->marca->nombre }}</small><br>
-                                                                    <small>IMEI/N&deg; de serie {{ $item->producto->imei }}</small>
+                                                                    <b>{{ $item->producto->tipo->marca->nombre }} {{ $item->producto->tipo->nombre }}</b><br>
+                                                                    <small>IMEI/N&deg; de serie {{ $item->producto->imei }}</small><br>
+                                                                    {{-- <small>Precio de compra: {{ $item->producto->precio_compra }}<small>Bs.</small> </small><br> --}}
+                                                                    <small>Precios: {{ intval($item->producto->precio_venta_contado) }}<small>Bs.</small> {{ intval($item->producto->precio_venta) }}<small>Bs.</small> {!! $item->producto->precio_venta_alt ? intval($item->producto->precio_venta_alt).'<small>Bs.</small>' : '' !!}</small>
                                                                 </td>
                                                             </tr>
                                                         </table>

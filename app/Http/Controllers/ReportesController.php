@@ -92,6 +92,19 @@ class ReportesController extends Controller
         return view('reportes.ventas-lista', compact('ventas'));
     }
 
+    public function index_pagos(){
+        return view('reportes.pagos-browse');
+    }
+
+    public function pagos_lista(Request $request){
+        $pagos = VentasDetallesCuotasPago::with(['cuota.detalle.producto.tipo.marca', 'cuota.detalle.venta.cliente'])
+                    ->where('deleted_at', NULL)
+                    ->whereDate('created_at', '>=', $request->inicio)
+                    ->whereDate('created_at', '<=', $request->fin)->get();
+                    // dd($pagos);
+        return view('reportes.pagos-lista', compact('pagos'));
+    }
+
     public function index_diario(){
         return view('reportes.diario-browse');
     }
