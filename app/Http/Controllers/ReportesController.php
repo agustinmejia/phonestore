@@ -36,9 +36,11 @@ class ReportesController extends Controller
                 $fecha = date('Y-m-d', strtotime($fecha.' + 1 month'));
                 break;
         }
-        $data = VentasDetallesCuota::with(['detalle.venta.cliente', 'detalle.venta.garantes.persona'])
+        $data = VentasDetallesCuota::with(['detalle.venta.cliente', 'detalle.venta.garantes.persona', 'pagos' => function($q){
+                        $q->where('deleted_at', NULL);
+                    }])
                     ->where('deleted_at', NULL)->where('estado', 'pendiente')
-                    ->where('fecha', '<=', date('Y-m-d', strtotime($fecha)))->take(10);
+                    ->where('fecha', '<=', date('Y-m-d', strtotime($fecha)))->get();
         // return $data;
 
         return
@@ -65,7 +67,14 @@ class ReportesController extends Controller
                 return $row->detalle->producto->tipo->marca->nombre.' <b>'.$row->detalle->producto->tipo->nombre.'</b>';
             })
             ->addColumn('fecha', function($row){
-                return date('d/m/Y', strtotime($row->fecha)).'<br><small>'.Carbon::parse($row->fecha)->diffForHumans().'</small>';
+                return date('Y/m/d', strtotime($row->fecha)).'<br><small>'.Carbon::parse($row->fecha)->diffForHumans().'</small>';
+            })
+            ->addColumn('deuda', function($row){
+                $pagos = 0;
+                foreach ($row->pagos as $item) {
+                    $pagos += $item->monto;
+                }
+                return $row->monto - $pagos;
             })
             ->addColumn('action', function($row){
                 $actions = '
@@ -77,7 +86,7 @@ class ReportesController extends Controller
                         ';
                 return $actions;
             })
-            ->rawColumns(['cliente', 'garante', 'equipo', 'fecha', 'action'])
+            ->rawColumns(['cliente', 'garante', 'equipo', 'fecha', 'deuda', 'action'])
             ->make(true);
     }
 

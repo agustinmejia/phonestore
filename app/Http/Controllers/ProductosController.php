@@ -33,7 +33,7 @@ class ProductosController extends Controller
 
     public function list()
     {
-        $data = Producto::with(['tipo.marca', 'venta.cuotas.pagos'])->where('deleted_at', NULL)->take(10);
+        $data = Producto::with(['tipo.marca', 'venta.cuotas.pagos'])->where('deleted_at', NULL)->limit(10)->get();
         // return $data;
 
         return
@@ -132,7 +132,7 @@ class ProductosController extends Controller
 
     public function list_group_type()
     {
-        $data = TiposProducto::with(['marca', 'productos.venta.cuotas.pagos'])->where('deleted_at', NULL)->take(10);
+        $data = TiposProducto::with(['marca', 'productos.venta.cuotas.pagos'])->where('deleted_at', NULL)->limit(10)->get();
         // return $data;
 
         return

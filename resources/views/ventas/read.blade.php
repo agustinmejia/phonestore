@@ -93,8 +93,10 @@
                                         <tbody>
                                             @foreach ($reg->detalles as $item)
                                                 @php
+                                                    $precio = 0;
                                                     $pagos = 0;
                                                     $descuento = 0;
+                                                    // dd($item);
                                                 @endphp
                                                 <tr>
                                                     <td>{{ $item->id }}</td>
@@ -113,7 +115,7 @@
                                                                         $pagos += $pago->monto;
                                                                     }
                                                                 }
-
+                                                                $precio += $cuota->monto;
                                                                 $descuento += $cuota->descuento;
                                                             }
                                                         @endphp
@@ -129,13 +131,13 @@
                                                             </tr>
                                                         </table>
                                                     </td>
-                                                    <td style="text-align: right">Bs. {{ $item->precio }}</td>
+                                                    <td style="text-align: right">Bs. {{ $precio }}</td>
                                                     <td style="text-align: right">Bs. {{ $descuento }}</td>
                                                     <td style="text-align: right">Bs. {{ $pagos }}</td>
                                                     @php
-                                                        $deuda = $item->precio - $pagos- $descuento;
+                                                        $deuda = $precio - $pagos - $descuento;
                                                     @endphp
-                                                    <td style="text-align: right">Bs. {{ $deuda > 0 ? $deuda : 0 }}</td>
+                                                    <td style="text-align: right">Bs. {{ $deuda }}</td>
                                                     <td style="text-align: right">
                                                         <button class="btn btn-success btn-sm btn-detalle" data-toggle="modal" data-target="#detalle_modal" data-cuotas='@json($item->cuotas)'>
                                                             <i class="voyager-list"></i> <span class="hidden-xs hidden-sm">Detalles</span>

@@ -28,10 +28,10 @@
                                         <input type="date" name="fecha" value="{{ date('Y-m-d') }}" class="form-control" required />
                                     </div>
                                     <div class="form-group">
-                                        De <input type="time" name="inicio" value="{{ date('H:i') }}" class="form-control" required />
+                                        De <input type="time" name="inicio" value="08:00" class="form-control" required />
                                     </div>
                                     <div class="form-group">
-                                        A <input type="time" name="fin" value="{{ date('H:i') }}" class="form-control" required />
+                                        A <input type="time" name="fin" value="18:00" class="form-control" required />
                                     </div>
                                     <div class="form-group">
                                         <select name="user_id" class="form-control">

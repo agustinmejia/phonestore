@@ -34,7 +34,7 @@ class ComprasController extends Controller
 
     public function list()
     {
-        $data = Compra::with(['producto.tipo.marca', 'proveedor', 'empleado'])->where('deleted_at', NULL)->take(10);
+        $data = Compra::with(['producto.tipo.marca', 'proveedor', 'empleado'])->where('deleted_at', NULL)->get();
         // return $data;
 
         return

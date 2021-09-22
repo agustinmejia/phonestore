@@ -37,9 +37,8 @@ class VentasController extends Controller
         return view('ventas.browse');
     }
 
-    public function list()
-    {
-        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'garantes.persona', 'detalles.cuotas.pagos'])->where('deleted_at', NULL)->take(10);
+    public function list(){
+        $data = Venta::with(['detalles.producto.tipo.marca', 'cliente', 'garantes.persona', 'detalles.cuotas.pagos'])->where('deleted_at', NULL)->get();
         // return $data;
 
         return
@@ -88,12 +87,11 @@ class VentasController extends Controller
                 return $total - $descuento;
             })
             ->addColumn('deuda', function($row){
-                $total = 0;
+                $precio = 0;
                 $pagos = 0;
                 $descuento = 0;
                 $proximo_pago = '';
                 foreach ($row->detalles as $item) {
-                    $total += $item->precio;
                     foreach ($item->cuotas as $cuota) {
                         if($cuota->estado == 'pendiente' && !$proximo_pago){
                             $proximo_pago = $cuota->fecha;
@@ -101,31 +99,35 @@ class VentasController extends Controller
                         foreach ($cuota->pagos->where('deleted_at', NULL) as $pago) {
                             $pagos += $pago->monto;
                         }
+                        $precio += $cuota->monto;
                         $descuento += $cuota->descuento;
                     }
                 }
-                $deuda = $total - $pagos - $descuento;
-                return ($deuda > 0 ? $deuda : 0).($proximo_pago ? '<br><b style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</b>' : '');
+                $deuda = $precio - $pagos - $descuento;
+                return ($deuda > 0 ? $deuda : 0).($proximo_pago ? '<br><small style="font-style: bold" class="'.($proximo_pago < date('Y-m-d') ? 'text-danger' : '').($proximo_pago == date('Y-m-d') ? 'text-info' : '').'">Próximo pago '.Carbon::parse($proximo_pago)->diffForHumans().'</small>' : '');
             })
             ->addColumn('action', function($row){
-                $total = 0;
+                $precio = 0;
                 $pagos = 0;
+                $descuento = 0;
                 foreach ($row->detalles as $item) {
-                    $total += $item->precio;
                     foreach ($item->cuotas as $cuota) {
                         foreach ($cuota->pagos as $pago) {
                             $pagos += $pago->monto;
                         }
+                        $precio += $cuota->monto;
+                        $descuento += $cuota->descuento;
                     }
                 }
-                $deuda = $total - $pagos;
+                
+                $deuda = $precio - $pagos - $descuento;
 
                 $actions = '
                     <div class="no-sort no-click bread-actions text-right">
                         <a href="'.route('ventas.show', ['venta' => $row->id]).'" title="Ver" class="btn btn-sm btn-warning view">
                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                         </a>
-                        <button title="Borrar" class="btn btn-sm btn-danger delete" '.($deuda <= 0 ? 'disabled' : '').' data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/ventas/".$row->id)."'".')">
+                        <button title="Borrar" class="btn btn-sm btn-danger delete" '.($deuda <= 0 && date('Y-m-d') != date('Y-m-d', strtotime($item->created_at)) ? 'disabled' : '').' data-toggle="modal" data-target="#delete_modal" onclick="deleteItem('."'".url("admin/ventas/".$row->id)."'".')">
                             <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Anular</span>
                         </button>
                     </div>
@@ -196,17 +198,18 @@ class VentasController extends Controller
             }
 
             for ($i=0; $i < count($request->producto_id); $i++) {
+                $precio = $request->precio[$i] - $request->descuento[$i];
                 $detalle = VentasDetalle::create([
                     'venta_id' => $venta->id,
                     'producto_id' => $request->producto_id[$i],
-                    'precio' => $request->precio[$i] - $request->descuento[$i]
+                    'precio' => $precio
                 ]);
 
                 Producto::where('id', $request->producto_id[$i])->update([
                     'estado' => $request->tipo_venta[$i] == 'credito' ? 'crédito' : 'vendido'
                 ]);
 
-                $pago_cuota = in_array($request->producto_id[$i], $request->cuota_inicial_pago ?? []) ? true : false;
+                $pago_cuota_inicial = in_array($request->producto_id[$i], $request->cuota_inicial_pago ?? []) ? true : false;
 
                 // Pago de la cuota inicial
                 $cuota = VentasDetallesCuota::create([
@@ -214,10 +217,13 @@ class VentasController extends Controller
                     'tipo' => $request->tipo_venta[$i] == 'credito' ? 'cuota inicial' : 'Pago del equipo',
                     'monto' => $request->cuota_inicial[$i] ?? 0,
                     'fecha' => $fecha,
-                    'estado' => $pago_cuota ? 'pagada' : 'pendiente'
+                    'estado' => $pago_cuota_inicial ? 'pagada' : 'pendiente'
                 ]);
 
-                if ($pago_cuota) {
+                // Variable para sumar el pago de cuotas y no sea superior al precio
+                $monto_acumulado = $request->cuota_inicial[$i] ?? 0;
+
+                if ($pago_cuota_inicial) {
                     if($request->cuota_inicial[$i]){
                         VentasDetallesCuotasPago::create([
                             'ventas_detalles_cuota_id' => $cuota->id,
@@ -251,10 +257,13 @@ class VentasController extends Controller
                     }
 
                     for ($j=0; $j < $request->cuotas[$i]; $j++) {
+                        $monto_acumulado += $request->pago_cuota[$i];
+                        $pago_cuota = $monto_acumulado <= $precio ? $request->pago_cuota[$i] : $request->pago_cuota[$i] - ($monto_acumulado - $precio);
+
                         VentasDetallesCuota::create([
                             'ventas_detalle_id' => $detalle->id,
                             'tipo' => 'cuota',
-                            'monto' => $request->pago_cuota[$i],
+                            'monto' => $pago_cuota,
                             'fecha' => $fecha_inicio,
                             'estado' => 'pendiente'
                         ]);

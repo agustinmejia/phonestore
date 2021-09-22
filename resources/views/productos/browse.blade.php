@@ -169,24 +169,24 @@
             $('[data-toggle="tooltip"]').tooltip();
             if(!group){
                 let columns = [
-                    { data: 'id', title: 'id' },
+                    { data: 'id', title: 'id', searchable: false },
                     { data: 'equipo', title: 'Equipo' },
-                    { data: 'precios', title: 'Precios' },
+                    { data: 'precios', title: 'Precios', searchable: false },
                     { data: 'estado', title: 'Estado' },
-                    { data: 'detalles', title: 'Detalles' },
+                    { data: 'detalles', title: 'Detalles', searchable: false },
                     { data: 'action', title: 'Acciones', orderable: false, searchable: false },
                 ];
                 customDataTable("{{ url('admin/productos/ajax/list') }}", columns);
             }else if(group == 'type'){
                 let columns = [
-                    { data: 'id', title: 'id' },
+                    { data: 'id', title: 'id', searchable: false },
                     { data: 'equipo', title: 'Equipo' },
-                    { data: 'stock', title: 'Stock actual' },
+                    { data: 'stock', title: 'Stock actual', searchable: false },
                     { data: 'stock_credito', title: 'Stock a crédito' },
-                    { data: 'inversion', title: 'Inversión Bs.' },
-                    { data: 'pagos', title: 'Pagos Bs.' },
-                    { data: 'deuda', title: 'Deuda Bs.' },
-                    { data: 'ganancia', title: 'Ganancia Bs.' },
+                    { data: 'inversion', title: 'Inversión Bs.', searchable: false },
+                    { data: 'pagos', title: 'Pagos Bs.', searchable: false },
+                    { data: 'deuda', title: 'Deuda Bs.', searchable: false },
+                    { data: 'ganancia', title: 'Ganancia Bs.', searchable: false },
                 ];
                 customDataTable("{{ url('admin/productos/ajax/list/type') }}", columns);
             }

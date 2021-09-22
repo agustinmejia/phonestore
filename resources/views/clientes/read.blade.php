@@ -127,8 +127,12 @@
                                                                                 </tr>
                                                                             </thead>
                                                                             <tbody>
+                                                                                @php
+                                                                                    $precio = 0;
+                                                                                @endphp
                                                                                 @foreach ($detalle->cuotas as $cuota)
                                                                                     @php
+                                                                                        $precio += $cuota->monto;
                                                                                         $total_pago = 0;
                                                                                         $pagos = '';
                                                                                         foreach($cuota->pagos as $pago){
@@ -147,6 +151,7 @@
                                                                             </tbody>
                                                                         </table>
                                                                     </td>
+                                                                    <td style="text-align: right"><b>Bs. {{ number_format($precio, 2, ',', '.') }}</b></td>
                                                                 </tr>
                                                             </table>
                                                         @endforeach
@@ -159,7 +164,7 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="2"><h3 class="text-center">No tiene ventas registradas</h3></td>
+                                                    <td colspan="2"><h4 class="text-center">No tiene ventas registradas</h4></td>
                                                 </tr>
                                             @endforelse
                                         </tbody>
@@ -255,7 +260,7 @@
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="3"><h3 class="text-center">No ha sido garante de ningún cliente</h3></td>
+                                                    <td colspan="4"><h4 class="text-center">No ha sido garante de ningún cliente</h4></td>
                                                 </tr>
                                             @endforelse
                                         </tbody>

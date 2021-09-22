@@ -53,13 +53,12 @@
             $('#select-rango').val(rango);
             $('[data-toggle="tooltip"]').tooltip()
             let columns = [
-                { data: 'id', title: 'id' },
+                { data: 'fecha', title: 'Fecha de pago' },
                 { data: 'cliente', title: 'Cliente' },
                 { data: 'garante', title: 'Garante(s)' },
                 { data: 'equipo', title: 'Equipo' },
                 { data: 'tipo', title: 'Tipo' },
-                { data: 'monto', title: 'Deuda Bs.' },
-                { data: 'fecha', title: 'Fecha de pago' },
+                { data: 'deuda', title: 'Deuda Bs.' },
                 { data: 'action', title: 'Acciones', orderable: false, searchable: false },
             ]
             customDataTable("{{ url('admin/reportes/deudas') }}/"+rango, columns);
