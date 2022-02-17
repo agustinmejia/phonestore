@@ -172,7 +172,7 @@ class VentasController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
+        // dd($request->all());
         DB::beginTransaction();
         try {
             $fecha = $request->fecha ?? date('Y-m-d');
@@ -186,15 +186,18 @@ class VentasController extends Controller
                 'iva' => $request->iva
             ]);
 
-            for ($i=0; $i < count($request->garante_id); $i++) {
-                $persona = Persona::find($request->garante_id[$i]);
-                if(!$persona){
-                    $persona = Persona::create(['nombre_completo' => $request->garante_id[$i]]);
+            // En caso de ser una venta al contado no se necesita garante
+            if($request->garante_id){
+                for ($i=0; $i < count($request->garante_id); $i++) {
+                    $persona = Persona::find($request->garante_id[$i]);
+                    if(!$persona){
+                        $persona = Persona::create(['nombre_completo' => $request->garante_id[$i]]);
+                    }
+                    VentasGarante::create([
+                        'venta_id' => $venta->id,
+                        'persona_id' => $persona->id
+                    ]);
                 }
-                VentasGarante::create([
-                    'venta_id' => $venta->id,
-                    'persona_id' => $persona->id
-                ]);
             }
 
             for ($i=0; $i < count($request->producto_id); $i++) {
@@ -260,13 +263,15 @@ class VentasController extends Controller
                         $monto_acumulado += $request->pago_cuota[$i];
                         $pago_cuota = $monto_acumulado <= $precio ? $request->pago_cuota[$i] : $request->pago_cuota[$i] - ($monto_acumulado - $precio);
 
-                        VentasDetallesCuota::create([
-                            'ventas_detalle_id' => $detalle->id,
-                            'tipo' => 'cuota',
-                            'monto' => $pago_cuota,
-                            'fecha' => $fecha_inicio,
-                            'estado' => 'pendiente'
-                        ]);
+                        if($pago_cuota > 0){
+                            VentasDetallesCuota::create([
+                                'ventas_detalle_id' => $detalle->id,
+                                'tipo' => 'cuota',
+                                'monto' => $pago_cuota,
+                                'fecha' => $fecha_inicio,
+                                'estado' => 'pendiente'
+                            ]);
+                        }
                         $fecha_inicio = date("Y-m-d", strtotime($fecha_inicio."+ $cantidad $periodo"));
                     }
                 }

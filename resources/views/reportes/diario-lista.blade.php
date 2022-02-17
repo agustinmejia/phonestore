@@ -186,7 +186,7 @@
                         @if ($venta->venta->estado == 'vendido')
                             <div>
                                 <small>Precio de venta: </small><b>Bs. {{ number_format($venta->venta->precio, 0, '', '') }}</b><br>
-                                <small>Ganancia: </small><b>Bs. {{ $venta->venta->precio-$venta->precio_compra }}</b>
+                                <small>Ganancia: </small><b>Bs. {{ $venta->venta->precio - $venta->producto->precio_compra }}</b>
                             </div>
                         @endif
                         @if ($venta->estado == 'crédito')
@@ -202,9 +202,9 @@
                         @endphp
                         <div>
                             <small>Precio de venta: </small><b>Bs. {{ number_format($venta->precio, 0, '', '') }}</b><br>
-                            <small>Ganancia: </small><b>Bs. {{ $venta->precio-$venta->precio_compra }}</b><br>
+                            <small>Ganancia: </small><b>Bs. {{ $venta->precio - $venta->producto->precio_compra }}</b><br>
                             <small>Nro de cuotas: </small><b>{{ count($venta->cuotas->where('tipo', 'cuota')) }}</b>
-                            <small> - pagadas: </small><b>{{ count($venta->cuotas->where('estado', 'pagada')->where('tipo', 'cuota')) }}</b> <br>
+                            <small>pagadas: </small><b>{{ count($venta->cuotas->where('estado', 'pagada')->where('tipo', 'cuota')) }}</b> <br>
                             <small>Monto pagado: </small><b>Bs. {{ $monto_pagado }}</b> <br> <small>Deuda: </small><b>Bs. {{ $venta->precio - $monto_pagado }}</b>
                         </div>
                     </td>

@@ -33,7 +33,7 @@ class ProductosController extends Controller
 
     public function list()
     {
-        $data = Producto::with(['tipo.marca', 'venta.cuotas.pagos'])->where('deleted_at', NULL)->limit(10)->get();
+        $data = Producto::with(['tipo.marca', 'venta.cuotas.pagos'])->where('deleted_at', NULL)->get();
         // return $data;
 
         return

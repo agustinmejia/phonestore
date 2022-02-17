@@ -38,9 +38,11 @@
                             </div>
                             <div class="panel-body" style="padding-top:0;">
                                 <p>
-                                    @foreach ($reg->garantes as $item)
+                                    @forelse ($reg->garantes as $item)
                                     {{ $item->persona->nombre_completo }} - Telf: <a href="tel: {{ $item->persona->telefono }}">{{ $item->persona->telefono }}</a> &nbsp;
-                                    @endforeach
+                                    @empty
+                                    &nbsp;
+                                    @endforelse
                                 </p>
                             </div>
                             <hr style="margin:0;">

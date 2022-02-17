@@ -237,7 +237,7 @@
                                                     <td colspan="2"><input type="hidden" value="0" id="input-descuento" /><h4 style="text-align: right" id="label-descuento">0.00 <small>Bs.</small></h4></td>
                                                 </tr>
                                                 <tr>
-                                                    <td colspan="5" style="text-align: right"><b><input type="checkbox" value="1" id="checkbox-iva" /> IVA</b></td>
+                                                    <td colspan="5" style="text-align: right"><b><input type="checkbox" value="1" id="checkbox-iva" /> <label for="checkbox-iva">IVA</label></b></td>
                                                     <td colspan="2"><input type="hidden" value="0" id="input-iva" name="iva" /><h4 style="text-align: right" id="label-iva">0.00 <small>Bs.</small></h4></td>
                                                 </tr>
                                                 <tr>
@@ -555,6 +555,14 @@
             });
             let iva = parseFloat($('#input-iva').val());
             $('#label-pago-total').html(`${(total_pago+iva).toFixed(2)} <small>Bs.</small>`);
+
+            // Si se está comprando al contado no se necesita garante
+            let total = parseFloat($('#label-total').text().replace(' Bs.', ''));
+            if(total == total_pago+iva){
+                $('#select-garante_id').removeAttr('required');
+            }else{
+                $('#select-garante_id').attr('required', 'required');
+            }
         }
         function removeTr(index){
             $(`#tr-${index}`).remove();

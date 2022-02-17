@@ -253,7 +253,7 @@
                                                         </table>
                                                     </td>
                                                     <td class="no-sort no-click bread-actions text-right">
-                                                        <a href="{{ route('ventas.show', ['venta' => $item->id]) }}" title="Ver" class="btn btn-sm btn-warning view" style="margin: 5px 0px; padding: 5px 10px">
+                                                        <a href="{{ route('ventas.show', ['venta' => $item->venta_id]) }}" title="Ver" class="btn btn-sm btn-warning view" style="margin: 5px 0px; padding: 5px 10px">
                                                             <i class="voyager-eye"></i> <span class="hidden-xs hidden-sm">Ver</span>
                                                         </a>
                                                     </td>
